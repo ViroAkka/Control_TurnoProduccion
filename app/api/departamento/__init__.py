@@ -1,1 +1,0 @@
-from . import departamento_routes_api

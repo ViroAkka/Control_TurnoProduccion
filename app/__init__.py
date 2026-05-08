@@ -9,55 +9,55 @@ from app.extensions.swagger import init_swagger
 
 # API
 from app.api import api_bp
-from app.api.centro_de_costo.centro_de_costo_routes_api import centro_de_costo_api_bp
-from app.api.departamento.departamento_routes_api import departamento_api_bp
-from app.api.empleado.empleado_routes_api import empleado_api_bp
-from app.api.linea.linea_routes_api import linea_api_bp
-from app.api.proceso.proceso_routes_api import proceso_api_bp
-from app.api.programacion.programacion_routes_api import programacion_api_bp
-from app.api.registro.registro_routes_api import registro_api_bp
-from app.api.rol.rol_routes_api import rol_api_bp
-from app.api.rol_ruta.rol__ruta_routes_api import rol_ruta_api_bp
-from app.api.ruta.ruta_routes_api import ruta_api_bp
-from app.api.usuario.usuario_routes_api import usuario_api_bp
-from app.api.usuario_rol.usuario_rol_routes_api import usuario_rol_api_bp
+from app.routes.centro_de_costo.centro_de_costo_routes_api import centro_de_costo_api_bp
+from app.routes.departamento.departamento_routes_api import departamento_api_bp
+from app.routes.empleado.empleado_routes_api import empleado_api_bp
+from app.routes.linea.linea_routes_api import linea_api_bp
+from app.routes.proceso.proceso_routes_api import proceso_api_bp
+from app.routes.programacion.programacion_routes_api import programacion_api_bp
+from app.routes.registro.registro_routes_api import registro_api_bp
+from app.routes.rol.rol_routes_api import rol_api_bp
+from app.routes.rol_ruta.rol__ruta_routes_api import rol_ruta_api_bp
+from app.routes.ruta.ruta_routes_api import ruta_api_bp
+from app.routes.usuario.usuario_routes_api import usuario_api_bp
+from app.routes.usuario_rol.usuario_rol_routes_api import usuario_rol_api_bp
 
 # WEB TEMPLATES
-from app.web.centro_de_costo.centro_de_costo_routes_templates import centro_de_costo_template_bp
-from app.web.departamento.departamento_route_templates import departamento_template_bp
-from app.web.empleado.empleado_route_templates import empleado_template_bp
-from app.web.linea.linea_route_templates import linea_template_bp
-from app.web.proceso.proceso_route_templates import proceso_template_bp
-from app.web.programacion.programacion_routes_templates import programacion_template_bp
-from app.web.registro.registro_routes_templates import registro_template_bp
-from app.web.rol.rol_route_templates import rol_template_bp
-from app.web.rol_ruta.rol_ruta_routes_templates import rol_ruta_template_bp
-from app.web.ruta.ruta_route_templates import ruta_template_bp
-from app.web.usuario.usuario_route_templates import usuario_template_bp
-from app.web.usuario_rol.usuario_rol_route_templates import usuario_rol_template_bp
-from app.web.home.home_routes_templates import home_template_bp
+from app.routes.centro_de_costo.centro_de_costo_routes_templates import centro_de_costo_template_bp
+from app.routes.departamento.departamento_routes_templates import departamento_template_bp
+from app.routes.empleado.empleado_routes_templates import empleado_template_bp
+from app.routes.linea.linea_routes_templates import linea_template_bp
+from app.routes.proceso.proceso_routes_templates import proceso_template_bp
+from app.routes.programacion.programacion_routes_templates import programacion_template_bp
+from app.routes.registro.registro_routes_templates import registro_template_bp
+from app.routes.rol.rol_routes_templates import rol_template_bp
+from app.routes.rol_ruta.rol_ruta_routes_templates import rol_ruta_template_bp
+from app.routes.ruta.ruta_routes_templates import ruta_template_bp
+from app.routes.usuario.usuario_routes_templates import usuario_template_bp
+from app.routes.usuario_rol.usuario_rol_routes_templates import usuario_rol_template_bp
+from app.routes.home.home_routes_templates import home_template_bp
 
 # WEB LOGIC
-from app.web.centro_de_costo.centro_de_costo_routes_web import centro_de_costo_web_bp
-from app.web.departamento.departamento_route_web import departamento_web_bp
-from app.web.empleado.empleado_route_web import empleado_web_bp
-from app.web.linea.linea_route_web import linea_web_bp
-from app.web.proceso.proceso_route_web import proceso_web_bp
-from app.web.programacion.programacion_routes_web import programacion_web_bp
-from app.web.registro.registro_routes_web import registro_web_bp
-from app.web.rol.rol_route_web import rol_web_bp
-from app.web.rol_ruta.rol_ruta_routes_web import rol_ruta_web_bp
-from app.web.ruta.ruta_route_web import ruta_web_bp
-from app.web.usuario.usuario_route_web import usuario_web_bp
-from app.web.usuario_rol.usuario_rol_route_web import usuario_rol_web_bp
+from app.routes.centro_de_costo.centro_de_costo_routes_web import centro_de_costo_web_bp
+from app.routes.departamento.departamento_routes_web import departamento_web_bp
+from app.routes.empleado.empleado_routes_web import empleado_web_bp
+from app.routes.linea.linea_routes_web import linea_web_bp
+from app.routes.proceso.proceso_routes_web import proceso_web_bp
+from app.routes.programacion.programacion_routes_web import programacion_web_bp
+from app.routes.registro.registro_routes_web import registro_web_bp
+from app.routes.rol.rol_routes_web import rol_web_bp
+from app.routes.rol_ruta.rol_ruta_routes_web import rol_ruta_web_bp
+from app.routes.ruta.ruta_routes_web import ruta_web_bp
+from app.routes.usuario.usuario_routes_web import usuario_web_bp
+from app.routes.usuario_rol.usuario_rol_routes_web import usuario_rol_web_bp
 
 # blueprints for JSON APIS
-from app.api.centro_de_costo.centro_de_costo_routes_json import centro_de_costo_json_bp
-from app.api.empleado.empleado_routes_json import empleado_json_bp
-from app.api.linea.linea_routes_json import linea_json_bp
-from app.api.proceso.proceso_routes_json import proceso_json_bp
-from app.api.programacion.programacion_routes_json import programacion_json_bp
-from app.api.registro.registro_routes_json import registro_json_bp
+from app.routes.centro_de_costo.centro_de_costo_routes_json import centro_de_costo_json_bp
+from app.routes.empleado.empleado_routes_json import empleado_json_bp
+from app.routes.linea.linea_routes_json import linea_json_bp
+from app.routes.proceso.proceso_routes_json import proceso_json_bp
+from app.routes.programacion.programacion_routes_json import programacion_json_bp
+from app.routes.registro.registro_routes_json import registro_json_bp
 
 
 # Login Manager
