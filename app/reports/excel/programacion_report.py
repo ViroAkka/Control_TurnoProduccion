@@ -12,7 +12,7 @@ from copy import copy
 def generar_reporte_programacion(programacion, detalles):
     ruta_plantilla = "app/templates/excel/programacion.xlsm"
 
-    wb = load_workbook(ruta_plantilla)
+    wb = load_workbook(ruta_plantilla, keep_vba=True)
 
     ws = wb["Programación"]
 

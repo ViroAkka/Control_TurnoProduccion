@@ -1,4 +1,3 @@
-
 from flask import Blueprint, jsonify, request, send_file
 
 from app.api.programacion.programacion_service import Programacion_Service
@@ -20,10 +19,9 @@ def descargar_programacion(idProgramacion):
     return send_file(
         archivo,
         as_attachment=True,
-        download_name=f"Programacion_{fecha}.xlsx",
+        download_name=f"Programacion_{fecha}.xlsm",
         mimetype=(
-            "application/"
-            "vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            "application/vnd.ms-excel.sheet.macroEnabled.12"
         )
     )
 
