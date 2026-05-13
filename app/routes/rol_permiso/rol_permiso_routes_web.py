@@ -20,10 +20,6 @@ rol_permiso_web_bp = Blueprint(
 @rol_permiso_web_bp.route("/crearRol_Permiso_web", methods=["GET", "POST"])
 @login_required
 def crearRol_Permiso_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    rol_permisos = Rol_Permiso_Service.getRol_Permisos_service(db)
-    roles = Rol_Service.getRoles_service(db)
-
     if request.method == "POST":
         data = {
             "idRol": request.form.get("idRol"),
@@ -36,33 +32,20 @@ def crearRol_Permiso_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                usuarios = usuarios,
-                roles = roles,
-                rol_permisos = rol_permisos,
                 ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                usuarios = usuarios,
-                roles = roles,
-                rol_permisos = rol_permisos,
                 ))
 
     return redirect(url_for(
         "rol_template.crearUsuario_template",
-        usuarios = usuarios,
-        roles = roles,
-        rol_permisos = rol_permisos,
         ))
 
 @rol_permiso_web_bp.route("/editarRol_Permiso_web", methods=["GET", "POST"])
 @login_required
 def editarRol_Permiso_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    rol_permisos = Rol_Permiso_Service.getRol_Permisos_service(db)
-    roles = Rol_Service.getRoles_service(db)
-
     if request.method == "POST":
         data = {
             "idRol": request.form.get("idRol"),
@@ -75,33 +58,20 @@ def editarRol_Permiso_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "rol_template.listaRoles_template", 
-                usuarios = usuarios,
-                roles = roles,
-                rol_permisos = rol_permisos, 
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "rol_template.listaRoles_template", 
-                usuarios = usuarios,
-                roles = roles,
-                rol_permisos = rol_permisos, 
             ))
 
     return redirect(url_for(
         "rol_template.listaRoles_template", 
-        usuarios = usuarios,
-        roles = roles,
-        rol_permisos = rol_permisos,
     ))    
 
 @rol_permiso_web_bp.route("/eliminarRol_Permiso_web", methods=["GET", "POST"])
 @login_required
 def eliminarRol_Permiso_web():
-    usuarios = Usuario_Service.getUsuarios_service(db)
-    roles = Rol_Service.getRoles_service(db)
-    rol_permisos = Rol_Permiso_Service.getRol_Permisos_service(db)
-    
     if request.method == "POST":
         data = {
             "idRol": request.form.get("idRol"),
@@ -114,22 +84,13 @@ def eliminarRol_Permiso_web():
             FlashMessages.flash_error(result["error"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                usuarios = usuarios,
-                roles = roles,
-                rol_permisos = rol_permisos,
             ))
         else:
             FlashMessages.flash_success(result["mensaje"])
             return redirect(url_for(
                 "rol_template.listaRoles_template",
-                usuarios = usuarios,
-                roles = roles,
-                rol_permisos = rol_permisos,
             ))
 
     return redirect(url_for(
         "rol_template.listaRoles_template", 
-        usuarios = usuarios,
-        roles = roles,
-        rol_permisos = rol_permisos,
     ))    

@@ -201,3 +201,11 @@ function submitDeletePermiso(idUsuario, idPermiso) {
   document.getElementById("delete_idPermiso").value = idPermiso;
   document.getElementById("deletePermisoForm").submit();
 }
+
+function submitDeletePermisoRol(idRol, idPermiso) {
+  // console.log("Hola submitDelete");
+
+  document.getElementById("delete_idRolP").value = idRol;
+  document.getElementById("delete_idPermiso").value = idPermiso;
+  document.getElementById("deletePermisoForm").submit();
+}

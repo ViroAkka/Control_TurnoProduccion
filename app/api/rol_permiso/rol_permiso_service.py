@@ -15,7 +15,23 @@ class Rol_Permiso_Service():
             return rol_permisos
 
         except Exception as ex:
-            return {"error": f"No se pudo obtener rol_permisos. {ex}"}
+            return {"error": f"No se pudo obtener rol_permisos. {str(ex)}"}
+    
+    @staticmethod
+    def getPermisosByRol_service(db, idRol):
+        try:
+            data = Rol_Permiso_Repository.getPermisosByRol(db, idRol)
+            rol_permisos = []
+            for row in data:
+                rol_permiso = {
+                    "idRol": row[0], 
+                    "idPermiso": row[1], 
+                }
+                rol_permisos.append(rol_permiso)
+            return rol_permisos
+
+        except Exception as ex:
+            return {"error": f"No se pudo obtener rol_permisos. {str(ex)}"}
             
     @staticmethod
     def createRol_Permiso_service(db, data):
