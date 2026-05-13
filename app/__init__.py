@@ -18,7 +18,8 @@ from app.routes.proceso.proceso_routes_api import proceso_api_bp
 from app.routes.programacion.programacion_routes_api import programacion_api_bp
 from app.routes.registro.registro_routes_api import registro_api_bp
 from app.routes.rol.rol_routes_api import rol_api_bp
-from app.routes.rol_ruta.rol__ruta_routes_api import rol_ruta_api_bp
+from app.routes.rol_permiso.rol_permiso_routes_api import rol_permiso_api_bp
+from app.routes.rol_ruta.rol_ruta_routes_api import rol_ruta_api_bp
 from app.routes.ruta.ruta_routes_api import ruta_api_bp
 from app.routes.usuario.usuario_routes_api import usuario_api_bp
 from app.routes.usuario_permiso.usuario_permiso_routes_api import usuario_permiso_api_bp
@@ -34,6 +35,7 @@ from app.routes.proceso.proceso_routes_templates import proceso_template_bp
 from app.routes.programacion.programacion_routes_templates import programacion_template_bp
 from app.routes.registro.registro_routes_templates import registro_template_bp
 from app.routes.rol.rol_routes_templates import rol_template_bp
+from app.routes.rol_permiso.rol_permiso_routes_templates import rol_permiso_template_bp
 from app.routes.rol_ruta.rol_ruta_routes_templates import rol_ruta_template_bp
 from app.routes.ruta.ruta_routes_templates import ruta_template_bp
 from app.routes.usuario.usuario_routes_templates import usuario_template_bp
@@ -51,6 +53,7 @@ from app.routes.proceso.proceso_routes_web import proceso_web_bp
 from app.routes.programacion.programacion_routes_web import programacion_web_bp
 from app.routes.registro.registro_routes_web import registro_web_bp
 from app.routes.rol.rol_routes_web import rol_web_bp
+from app.routes.rol_permiso.rol_permiso_routes_web import rol_permiso_web_bp
 from app.routes.rol_ruta.rol_ruta_routes_web import rol_ruta_web_bp
 from app.routes.ruta.ruta_routes_web import ruta_web_bp
 from app.routes.usuario.usuario_routes_web import usuario_web_bp
@@ -119,6 +122,7 @@ def create_app():
     app.register_blueprint(programacion_api_bp, url_prefix="/api/programacion")
     app.register_blueprint(registro_api_bp, url_prefix="/api/registro")
     app.register_blueprint(rol_api_bp, url_prefix="/api/rol")
+    app.register_blueprint(rol_permiso_api_bp, url_prefix="/api/rol_permiso")
     app.register_blueprint(rol_ruta_api_bp, url_prefix="/api/rol_ruta")
     app.register_blueprint(ruta_api_bp, url_prefix="/api/ruta")
     app.register_blueprint(usuario_api_bp, url_prefix="/api/usuario")
@@ -135,6 +139,7 @@ def create_app():
     app.register_blueprint(programacion_template_bp, url_prefix="/template/programacion")
     app.register_blueprint(registro_template_bp, url_prefix="/template/registro")
     app.register_blueprint(rol_template_bp, url_prefix="/template/rol")
+    app.register_blueprint(rol_permiso_template_bp, url_prefix="/template/rol_permiso")
     app.register_blueprint(rol_ruta_template_bp, url_prefix="/template/rol_ruta")
     app.register_blueprint(ruta_template_bp, url_prefix="/template/ruta")
     app.register_blueprint(usuario_template_bp, url_prefix="/template/usuario")
@@ -152,6 +157,7 @@ def create_app():
     app.register_blueprint(programacion_web_bp, url_prefix="/web/programacion")
     app.register_blueprint(registro_web_bp, url_prefix="/web/registro")
     app.register_blueprint(rol_web_bp, url_prefix="/web/rol")
+    app.register_blueprint(rol_permiso_web_bp, url_prefix="/web/rol_permiso")
     app.register_blueprint(rol_ruta_web_bp, url_prefix="/web/rol_ruta")
     app.register_blueprint(ruta_web_bp, url_prefix="/web/ruta")
     app.register_blueprint(usuario_web_bp, url_prefix="/web/usuario")
