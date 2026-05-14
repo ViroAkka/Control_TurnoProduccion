@@ -1,2 +1,30 @@
-config.py
-cierre_programaciones.log
+# Entorno virtual
+venv/
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+
+# Variables de entorno
+.env
+
+# Logs
+logs/
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# VS Code
+.vscode/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Uploads dinámicos
+uploads/
+
+# Reportes generados
+reports/
