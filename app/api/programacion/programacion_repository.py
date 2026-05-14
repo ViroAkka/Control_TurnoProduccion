@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+import pytz
+
 class ProgramacionRepository:
     @staticmethod
     def getProgramacionById(db, id):
@@ -265,17 +268,23 @@ class ProgramacionRepository:
         try:
             cursor = db.connection.cursor()
 
+            # Timezone de Guatemala
+            tz = pytz.timezone("America/Guatemala")
+
+            # Hora actual REAL 
+            ahora = datetime.now(tz)
+
             query = """
             UPDATE turnos_programacion
             SET
                 estado = 'CERRADO',
-                fecha_cierre = NOW(),
+                fecha_cierre = %s,
                 cerrado_por = 0
             WHERE estado = 'BORRADOR'
-            AND NOW() >= DATE_ADD(fecha, INTERVAL 1 DAY) + INTERVAL 15 HOUR
+            AND DATE_ADD(fecha, INTERVAL 1 DAY) + INTERVAL 15 HOUR <= %s
             """
 
-            cursor.execute(query)
+            cursor.execute(query, (ahora, ahora))
 
             db.connection.commit()
 
