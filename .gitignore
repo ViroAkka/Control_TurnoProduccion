@@ -7,7 +7,7 @@ config.py
 # Caché de Python
 __pycache__/
 *.py[cod]
-.pyc
+*.pyc
 
 # Variables de entorno
 .env
