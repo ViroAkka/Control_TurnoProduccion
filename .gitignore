@@ -1,6 +1,9 @@
 # Entorno virtual
 venv/
 
+# Config data
+config.py
+
 # Caché de Python
 __pycache__/
 *.py[cod]
@@ -11,6 +14,8 @@ __pycache__/
 # Logs
 logs/
 *.log
+cierre_programaciones.log
+error.log
 
 # Archivos temporales
 *.tmp
