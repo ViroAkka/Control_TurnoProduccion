@@ -4,6 +4,7 @@ WORKDIR /app
 
 # Dependencias del sistema
 RUN apt-get update && apt-get install -y \
+    libreoffice \
     gcc \
     default-libmysqlclient-dev \
     pkg-config \
