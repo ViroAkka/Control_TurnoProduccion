@@ -62,20 +62,11 @@
             <option value="programacion">programacion</option>
             <option value="registro">registro</option>
             <option value="rol">rol</option>
-            <option value="ruta">ruta</option>
+            <option value="rol">rol_permiso</option>
             <option value="usuario">usuario</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="departamento">Departamento</label>
-          <select class="form-control" name="departamento" id="departamento">
-            <option disabled selected value="">
-              -- Seleccione una opción --
-            </option>
-            {% for d in departamentos %}
-            <option value="{{ d.nameSlug }}">{{d.name}}</option>
-            {% endfor %}
+            <option value="usuario_departamento">usuario_departamento</option>
+            <option value="usuario_permiso">usuario_permiso</option>
+            <option value="usuario_rol">usuario_rol</option>
           </select>
         </div>
 
@@ -130,11 +121,10 @@
   function submitFormPermiso() {
     const formCrearPermiso = document.getElementById("formCrearPermiso");
     const modulo = document.getElementById("modulo");
-    const departamento = document.getElementById("departamento");
     const nombreClave = document.getElementById("nombreClave");
     const nombrePermiso = document.getElementById("nombrePermiso");
 
-    let moduloYNombreClave = `${modulo.value}.${departamento.value}.${nombreClave.value}`;
+    let moduloYNombreClave = `${modulo.value}.${nombreClave.value}`;
 
     nombrePermiso.value = moduloYNombreClave;
 
