@@ -1,8 +1,5 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.api.usuario.usuario_model import Usuario_Rutas
-from app.extensions.slugify import Slugify
-
 class UsuarioRepository:
     @staticmethod
     def getUsuarios(db):
@@ -34,7 +31,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor()
 
             query = """
-            SELECT idUsuario, username, nombre, password_hash, activo, idDepartment
+            SELECT idUsuario, username, nombre, password_hash, activo
 
             FROM turnos_usuario
             WHERE username = %s
@@ -59,8 +56,7 @@ class UsuarioRepository:
             cursor = db.connection.cursor()
 
             query = """
-            SELECT idUsuario, username, nombre, password_hash, activo, idDepartment
-
+            SELECT idUsuario, username, nombre, password_hash, activo
             FROM turnos_usuario
             WHERE idUsuario = %s
             """
@@ -165,7 +161,7 @@ class UsuarioRepository:
                 cursor.close()
 
     @staticmethod
-    def createUsuario(db, username, nombre, password, activo, idDepartment):
+    def createUsuario(db, username, nombre, password, activo):
         cursor = None
 
         try:
@@ -176,10 +172,10 @@ class UsuarioRepository:
             hashedPassword = generate_password_hash(password)
 
             query = """
-                INSERT INTO turnos_usuario(username, nombre, password_hash, activo, idDepartment) 
-                VALUES(%s, %s, %s, %s, %s)
+                INSERT INTO turnos_usuario(username, nombre, password_hash, activo) 
+                VALUES(%s, %s, %s, %s)
                 """
-            cursor.execute(query, (username, nombre, hashedPassword, activo, idDepartment))
+            cursor.execute(query, (username, nombre, hashedPassword, activo,))
 
             db.connection.commit()
 
@@ -188,10 +184,9 @@ class UsuarioRepository:
                 "username": username,
                 "nombre": nombre,   
                 "activo": activo,
-                "idDepartment": idDepartment,
             }
 
-            return {"mensaje": f"Usuario creado correctamente. ID: {newUser['idUsuario']}, Usuario: {newUser['username']}, Nombre: {newUser['nombre']}, Activo: {newUser['activo']}, idDepartment: {newUser['idDepartment']}"}
+            return {"mensaje": f"Usuario creado correctamente. ID: {newUser['idUsuario']}, Usuario: {newUser['username']}, Nombre: {newUser['nombre']}, Activo: {newUser['activo']}"}
         
         except Exception as ex:
             db.connection.rollback()
@@ -202,18 +197,18 @@ class UsuarioRepository:
                 cursor.close()
 
     @staticmethod
-    def updateUsuario(db, idUsuario, nombre, activo, idDepartment):
+    def updateUsuario(db, idUsuario, nombre, activo):
         cursor = None
 
         try: 
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_usuario SET nombre = %s, activo = %s, idDepartment = %s
+                UPDATE turnos_usuario SET nombre = %s, activo = %s
                 WHERE idUsuario = %s
                 """
             
-            cursor.execute(query, (nombre, activo, idDepartment, idUsuario))
+            cursor.execute(query, (nombre, activo, idUsuario))
             
             db.connection.commit()
 
@@ -221,10 +216,9 @@ class UsuarioRepository:
                 "idUsuario": idUsuario,
                 "nombre": nombre,
                 "activo": activo,
-                "idDepartment": idDepartment,
             }
 
-            return {"mensaje": f"Usuario modificado correctamente. ID: {editedUsuario['idUsuario']}, {editedUsuario['nombre']}, {editedUsuario['activo']}, idDeparment: {editedUsuario['idDepartment']}"}
+            return {"mensaje": f"Usuario modificado correctamente. ID: {editedUsuario['idUsuario']}, {editedUsuario['nombre']}, {editedUsuario['activo']}"}
 
         except Exception as ex:
             db.connection.rollback()
