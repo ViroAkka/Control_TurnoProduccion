@@ -52,6 +52,8 @@ def crearUsuario_web():
             "nombre": request.form.get("nombre"),
             "password": request.form.get("password"),
             "activo": request.form.get("activo"),
+            "scope_departamentos_global": request.form.get("scope_departamentos_global"),
+            "scope_permisos_global": request.form.get("scope_permisos_global"),
         }
 
         result = Usuario_Service.createUsuario_service(db, data)
@@ -76,6 +78,8 @@ def editarUsuario_web():
             "nombre": request.form.get("nombre"),
             "password": request.form.get("password"),
             "activo": request.form.get("activo"),
+            "scope_departamentos_global": request.form.get("scope_departamentos_global"),
+            "scope_permisos_global": request.form.get("scope_permisos_global"),
         }
 
         result = Usuario_Service.updateUsuario_service(db, data)

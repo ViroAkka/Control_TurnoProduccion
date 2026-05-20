@@ -214,7 +214,7 @@ class UsuarioRepository:
                 cursor.close()
 
     @staticmethod
-    def createUsuario(db, username, nombre, password, activo):
+    def createUsuario(db, username, nombre, password, activo, scope_departamentos_global, scope_permisos_global):
         cursor = None
 
         try:
@@ -225,10 +225,10 @@ class UsuarioRepository:
             hashedPassword = generate_password_hash(password)
 
             query = """
-                INSERT INTO turnos_usuario(username, nombre, password_hash, activo) 
-                VALUES(%s, %s, %s, %s)
+                INSERT INTO turnos_usuario(username, nombre, password_hash, activo, scope_departamentos_global, scope_permisos_global) 
+                VALUES(%s, %s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (username, nombre, hashedPassword, activo,))
+            cursor.execute(query, (username, nombre, hashedPassword, activo, scope_departamentos_global, scope_permisos_global,))
 
             db.connection.commit()
 
@@ -237,46 +237,76 @@ class UsuarioRepository:
                 "username": username,
                 "nombre": nombre,   
                 "activo": activo,
+                "scope_departamentos_global": scope_permisos_global,
+                "scope_permisos_global": scope_departamentos_global,
             }
 
-            return {"mensaje": f"Usuario creado correctamente. ID: {newUser['idUsuario']}, Usuario: {newUser['username']}, Nombre: {newUser['nombre']}, Activo: {newUser['activo']}"}
+            return {"mensaje": 
+                    f"""
+                    Usuario creado correctamente. 
+                        ID: {newUser['idUsuario']}, 
+                        Usuario: {newUser['username']},
+                        Nombre: {newUser['nombre']}, 
+                        Activo: {newUser['activo']},
+                        Scope_depts: {newUser['scope_departamentos_global']},
+                        Scope_permission: {newUser['scope_permisos_global']},
+                    """}
         
         except Exception as ex:
             db.connection.rollback()
-            return {"error": f"No se pudo crear el usuario en el repositorio: {str(ex)}"}
+            raise Exception (f"No se puede crear el usuario: {str(ex)}")
             
         finally:
             if cursor:
                 cursor.close()
 
     @staticmethod
-    def updateUsuario(db, idUsuario, nombre, activo):
+    def updateUsuario(db, idUsuario, nombre, activo, scope_departamentos_global, scope_permisos_global):
         cursor = None
+
+        if scope_departamentos_global == 1 or scope_departamentos_global == True or scope_departamentos_global == "True":
+            scope_departamentos_global = 1
+        else:
+            scope_departamentos_global = 0
+        
+        if scope_permisos_global == 1 or scope_permisos_global == True or scope_permisos_global == "True":
+            scope_permisos_global = 1
+        else:
+            scope_permisos_global = 0
 
         try: 
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_usuario SET nombre = %s, activo = %s
+                UPDATE turnos_usuario SET nombre = %s, activo = %s, scope_departamentos_global = %s, scope_permisos_global = %s
                 WHERE idUsuario = %s
                 """
             
-            cursor.execute(query, (nombre, activo, idUsuario))
+            cursor.execute(query, (nombre, activo, scope_departamentos_global, scope_permisos_global, idUsuario))
             
             db.connection.commit()
 
             editedUsuario = {
                 "idUsuario": idUsuario,
-                "nombre": nombre,
+                "nombre": nombre,   
                 "activo": activo,
+                "scope_departamentos_global": scope_departamentos_global,
+                "scope_permisos_global": scope_permisos_global,
             }
 
-            return {"mensaje": f"Usuario modificado correctamente. ID: {editedUsuario['idUsuario']}, {editedUsuario['nombre']}, {editedUsuario['activo']}"}
+            return {"mensaje": 
+                    f"""
+                    Usuario creado correctamente. 
+                        ID: {editedUsuario['idUsuario']}, 
+                        Nombre: {editedUsuario['nombre']}, 
+                        Activo: {editedUsuario['activo']},
+                        Scope_depts: {editedUsuario['scope_departamentos_global']},
+                        Scope_permission: {editedUsuario['scope_permisos_global']},
+                    """}
 
         except Exception as ex:
             db.connection.rollback()
-                        
-            return {"error": f"No se pudo modificar usuario en repositorio: {str(ex)}"}
+            raise Exception (f"No se puede crear el usuario: {str(ex)}")
 
         finally:
             if cursor:

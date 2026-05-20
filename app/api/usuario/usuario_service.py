@@ -19,6 +19,8 @@ class Usuario_Service():
                "username": row[1],
                "nombre": row[2],
                "activo": row[4],               
+               "scope_departamentos_global": row[5],               
+               "scope_permisos_global": row[6],               
             }
             usuarios.append(usuario)
 
@@ -33,14 +35,16 @@ class Usuario_Service():
          nombre = data.get("nombre")
          password = data.get("password")
          activo = bool(data.get("activo"))
+         scope_departamentos_global = bool(data.get("scope_departamentos_global"))
+         scope_permisos_global = bool(data.get("scope_permisos_global"))
          
          if not username or not password:
             return {"error": "Nombre de usuario y contraseña son obligatorios"}, 400
          
-         return UsuarioRepository.createUsuario(db, username, nombre, password, activo)
+         return UsuarioRepository.createUsuario(db, username, nombre, password, activo, scope_departamentos_global, scope_permisos_global)
          
       except Exception as ex:
-         return {"error": f"No se pudo crear el usuario. {ex}"}
+         raise Exception(f"No se pudo crear el usuario. {str(ex)}")
 
    @staticmethod
    def updateUsuario_service(db, data):
@@ -48,11 +52,15 @@ class Usuario_Service():
          idUsuario = data.get("idUsuario")
          nombre = data.get("nombre")
          activo = bool(data.get("activo"))
+         scope_departamentos_global = bool(data.get("scope_departamentos_global"))
+         scope_permisos_global = bool(data.get("scope_permisos_global"))
          
          required_fields = {
                   "idUsuario": idUsuario, 
                   "nombre": nombre,
                   "activo": activo,
+                  "scope_departamentos_global": scope_departamentos_global,
+                  "scope_permisos_global": scope_permisos_global,
                }
          
          missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
@@ -60,10 +68,10 @@ class Usuario_Service():
          if missing_fields:
                return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
          
-         return UsuarioRepository.updateUsuario(db, idUsuario, nombre, activo)
+         return UsuarioRepository.updateUsuario(db, idUsuario, nombre, activo, scope_departamentos_global, scope_permisos_global)
       
       except Exception as ex:
-         return {"error": f"No se pudo modificar la usuario. {ex}"}
+         raise Exception(f"No se pudo actualizar el usuario. {str(ex)}")
       
    @staticmethod
    def updatePassword_service(db, data):
