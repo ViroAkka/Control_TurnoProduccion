@@ -140,13 +140,30 @@ class UsuarioRepository:
             cursor = db.connection.cursor()
 
             query = """
-            SELECT p.nombrePermiso
-            FROM turnos_permiso p
-            JOIN turnos_usuario_permiso up ON p.idPermiso = up.idPermiso
-            WHERE up.idUsuario  = %s
+            SELECT DISTINCT nombrePermiso
+            FROM (
+                -- permisos directos
+                SELECT p.nombrePermiso
+                FROM turnos_permiso p
+                JOIN turnos_usuario_permiso up
+                    ON p.idPermiso = up.idPermiso
+                WHERE up.idUsuario = %s
+
+                UNION
+
+                -- permisos por rol
+                SELECT p.nombrePermiso
+                FROM turnos_permiso p
+                JOIN turnos_rol_permiso rp
+                    ON p.idPermiso = rp.idPermiso
+                JOIN turnos_usuario_rol ur
+                    ON rp.idRol = ur.idRol
+                WHERE ur.idUsuario = %s
+                
+            ) permisos
             """
 
-            cursor.execute(query, (idUsuario,))
+            cursor.execute(query, (idUsuario, idUsuario))
             rows = cursor.fetchall()
 
             if rows is not None:
@@ -155,7 +172,7 @@ class UsuarioRepository:
             return permisos
         
         except Exception as ex:
-            return {"error": f"No se pueden obtener permisos del usuario en el repositorio: {str(ex)}"}
+            raise Exception(f"No se puede obtener permisos: {str(ex)}")
                     
         finally: 
             if cursor:
