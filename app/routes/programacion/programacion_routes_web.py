@@ -65,6 +65,35 @@ def crearProgramacionAutomatica_web():
         programaciones_borrador = programaciones_borrador,
         ))    
 
+@programacion_web_bp.route("/crearProgramacionPorDepartamentosUsuario_web", methods=["GET", "POST"])
+@login_required
+def crearProgramacionPorDepartamentosUsuario_web():
+    programaciones = Programacion_Service.getProgramaciones_service(db)
+    programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
+
+    if request.method == "POST":
+        data = {
+            "fecha": request.form.get("fecha"),
+            "elaborado_por": request.form.get("elaborado_por"),
+            "departamentos": request.form.getlist("departamentos"),
+        }
+
+        result = Programacion_Service.crearProgramacionPorDepartamentosUsuario(db, data)
+
+        if "error" in result:
+            FlashMessages.flash_error(result["error"])
+            return redirect(url_for("home_template.index"))
+        else:
+            FlashMessages.flash_success(result["mensaje"])
+            return redirect(url_for("home_template.index"))
+
+    return redirect(url_for(
+        "home_template.index", 
+        programaciones = programaciones,
+        programaciones_borrador = programaciones_borrador,
+        )
+    )
+
 @programacion_web_bp.route("/cerrarProgramacion_web", methods=["GET", "POST"])
 @login_required
 def cerrarProgramacion_web():

@@ -127,7 +127,7 @@ class ProgramacionRepository:
                 cursor.close()
 
     @staticmethod
-    def createProgramacion(db, fecha, idDepartment, fecha_creacion, estado):
+    def createProgramacion(db, fecha, idDepartment, elaborado_por, fecha_creacion, estado):
         cursor = None
 
         try: 
@@ -137,16 +137,17 @@ class ProgramacionRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_programacion(fecha, idDepartment, fecha_creacion, estado)
-                VALUES (%s, %s, %s, %s)
+                INSERT INTO turnos_programacion(fecha, idDepartment, elaborado_por, fecha_creacion, estado)
+                VALUES (%s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (fecha, idDepartment, fecha_creacion, estado,))
+            cursor.execute(query, (fecha, idDepartment, elaborado_por, fecha_creacion, estado,))
             
             db.connection.commit()
 
             newProgramacion = {
                 "fecha": fecha, 
                 "idDepartment": idDepartment, 
+                "elaborado_por": elaborado_por, 
                 "estado": estado,        
                 "fecha_creacion": fecha_creacion,        
             }

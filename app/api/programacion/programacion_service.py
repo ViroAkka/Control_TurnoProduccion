@@ -3,6 +3,7 @@ from datetime import datetime
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.programacion.programacion_repository import ProgramacionRepository
 from app.api.usuario.usuario_service import Usuario_Service
+from app.api.usuario_departamento.usuario_departamento_service import Usuario_Departamento_Service
 from app.extensions.slugify import Slugify
 
 class Programacion_Service():
@@ -146,8 +147,10 @@ class Programacion_Service():
         try:
             fecha = data.get("fecha")
             idDepartment = data.get("idDepartment")
+            elaborado_por = data.get("elaborado_por")
             fecha_creacion = datetime.now()
             estado = "BORRADOR"
+
 
             required_fields = {
                     "fecha": fecha, 
@@ -160,7 +163,7 @@ class Programacion_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
-            return ProgramacionRepository.createProgramacion(db, fecha, idDepartment, fecha_creacion, estado)
+            return ProgramacionRepository.createProgramacion(db, fecha, idDepartment, elaborado_por, fecha_creacion, estado)
         
         except Exception as ex:
             return {"error": f"No se pudo crear el programacion. {str(ex)}"}
@@ -169,6 +172,7 @@ class Programacion_Service():
     def createProgramacionAutomatica_service(db, data):
         try:
             fecha = data.get("fecha")
+            elaborado_por = data.get("elaborado_por")
             estado = "BORRADOR"
             current_time = datetime.now().date()
             departamentos_aplica_horas_extra = Departamento_Service.getDepartamentos_aplica_horas_extra_service(db)
@@ -188,12 +192,59 @@ class Programacion_Service():
                 if existsProgramacion:
                     continue
 
-                ProgramacionRepository.createProgramacion(db, fecha, depto['idDepartment'], current_time, estado)
+                ProgramacionRepository.createProgramacion(db, fecha, depto['idDepartment'], elaborado_por, current_time, estado)
 
             return {"mensaje": "Reportes creados correctamente."}
             
         except Exception as ex:
             return {"error": f"No se pudo crear la programación. {str(ex)}"}
+    
+    @staticmethod
+    def crearProgramacionPorDepartamentosUsuario(db, data):
+        try:
+            fecha = data.get("fecha")
+            departamentos = data.get("departamentos")
+            elaborado_por = data.get("elaborado_por")
+
+            estado = "BORRADOR"
+            current_time = datetime.now().date()
+
+            if not fecha:
+                return {"error": "La fecha es obligatoria"}
+            
+            if not departamentos:
+                return {"error": "Debe seleccionar al menos un departamento"}
+            
+            creados = 0
+            
+            for idDepartment in departamentos:
+                existsProgramacion = (
+                    ProgramacionRepository
+                        .getProgramacionByDateAndIdDepartment(
+                            db, 
+                            fecha, 
+                            idDepartment
+                        )
+                )
+                        
+                if existsProgramacion:
+                    continue
+                
+                ProgramacionRepository.createProgramacion(
+                    db, 
+                    fecha, 
+                    idDepartment,
+                    elaborado_por, 
+                    current_time, 
+                    estado
+                )
+
+                creados += 1    
+                
+            return {"mensaje": f"Se crearon {creados} programaciones correctamente"}
+            
+        except Exception as ex:
+            return {"error": f"No se pudo crear la(s) programación(es). {str(ex)}"}
         
     @staticmethod
     def cerrarProgramacion_service(db, data):

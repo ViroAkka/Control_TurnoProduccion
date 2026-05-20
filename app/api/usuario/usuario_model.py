@@ -18,8 +18,8 @@ class Usuario_Rutas(UserMixin):
         self.activo = activo
         self.roles = roles
         self.permisos = permisos
-        self.paths = paths,
-        self.departamentos = departamentos,
+        self.paths = paths
+        self.departamentos = departamentos
         self.scope_departamentos_global = scope_departamentos_global
         self.scope_permisos_global = scope_permisos_global
 
@@ -33,4 +33,7 @@ class Usuario_Rutas(UserMixin):
         if self.scope_departamentos_global:
             return True
         
-        return idDepartment in self.departamentos
+        return any(
+            d["idDepartment"] == idDepartment
+            for d in self.departamentos
+        )
