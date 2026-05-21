@@ -109,7 +109,7 @@ def create_app():
             if 'ultima_actividad' in session:
                 ultima = datetime.fromisoformat(session['ultima_actividad'])
 
-                if ahora - ultima > timedelta(minutes=15):
+                if ahora - ultima > timedelta(minutes=5):
                     session.clear()
                     return redirect(url_for("usuario_template.login"))
 
