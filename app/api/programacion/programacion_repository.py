@@ -145,6 +145,7 @@ class ProgramacionRepository:
             db.connection.commit()
 
             newProgramacion = {
+                "idProgramacion": cursor.lastrowid,
                 "fecha": fecha, 
                 "idDepartment": idDepartment, 
                 "elaborado_por": elaborado_por, 
@@ -152,7 +153,7 @@ class ProgramacionRepository:
                 "fecha_creacion": fecha_creacion,        
             }
 
-            return {"mensaje": f"Programacion creada correctamente. Fecha: {newProgramacion['fecha']}, idDepartment: {newProgramacion['idDepartment']}, estado: {newProgramacion['estado']},  fecha_creacion: {newProgramacion['fecha_creacion']}"}
+            return newProgramacion["idProgramacion"]
         
         except Exception as ex:
             db.connection.rollback()

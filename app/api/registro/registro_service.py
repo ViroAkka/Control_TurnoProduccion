@@ -116,6 +116,9 @@ class Registro_Service():
                     "badgeNumber": row[13],
                     "cena_con_costo": row[14],
                 }
+                
+                if not registro["idLinea"] or not registro["idProceso"]:
+                    continue
 
                 hora_inicio = row[3]
                 hora_fin = row[4]
@@ -145,6 +148,27 @@ class Registro_Service():
                 registro["nombreCentro"] = dataCentro["nombreCentro"]
 
                 registros.append(registro)
+                # print("---------------------------")
+                # print(f"idRegistro: {registro["idRegistro"]}")
+                # print(f"idProgramacion: {registro["idProgramacion"]}")
+                # print(f"idEmpleado: {registro["idEmpleado"]}")
+                # print(f"idLinea: {registro["idLinea"]}")
+                # print(f"idProceso: {registro["idProceso"]}")
+                # print(f"aplica_almuerzo: {registro["aplica_almuerzo"]}")
+                # print(f"aplica_cena: {registro["aplica_cena"]}")
+                # print(f"aplica_transporte: {registro["aplica_transporte"]}")
+                # print(f"observacion_transporte: {registro["observacion_transporte"]}")
+                # print(f"fecha: {registro["fecha"]}")
+                # print(f"idCentro: {registro["idCentro"]}")
+                # print(f"badgeNumber: {registro["badgeNumber"]}")
+                # print(f"cena_con_costo: {registro["cena_con_costo"]}")
+                # print(f"aplica_almuerzo: {registro["aplica_almuerzo"]}")
+                # print(f"aplica_cena: {registro["aplica_cena"]}")
+                # print(f"cena_con_costo: {registro["cena_con_costo"]}")
+                # print(f"nombreEmpleado: {registro["nombreEmpleado"]}")
+                # print(f"nombreLinea: {registro["nombreLinea"]}")
+                # print(f"nombreProceso: {registro["nombreProceso"]}")
+                # print(f"nombreCentro: {registro["nombreCentro"]}")
             return registros
 
         except Exception as ex:
@@ -251,6 +275,39 @@ class Registro_Service():
                 return { "error": "La programación ya se encuentra cerrada." }
 
             return RegistroRepository.createRegistro(db,idRegistro, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
+        
+        except Exception as ex:
+            return {"error": f"No se pudo crear el registro desde el servicio. {str(ex)}"}
+        
+    @staticmethod
+    def createRegistroAutomatico_service(db, data):
+        try:
+            idProgramacion = data.get("idProgramacion")
+            fecha = data.get("fecha")
+            idCentro = data.get("idCentro")
+            badgeNumber = data.get("badgeNumber")
+
+            required_fields = {
+                "idProgramacion": idProgramacion,
+                "fecha": fecha,
+                "idCentro": idCentro,
+                "badgeNumber": badgeNumber,
+            }
+            
+            missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
+
+            if missing_fields:
+                return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
+            
+            programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, idProgramacion)
+
+            if programacion["estado"] == "CERRADO":
+                return { "error": "La programación ya se encuentra cerrada." }
+            
+            idDepartment = programacion["idDepartment"]
+            
+            empleados = Empleado_Service.getActiveEmpleadosByDepartment_service(db, idDepartment)
+            return 
         
         except Exception as ex:
             return {"error": f"No se pudo crear el registro desde el servicio. {str(ex)}"}

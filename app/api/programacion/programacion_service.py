@@ -1,7 +1,9 @@
 from datetime import datetime
 
 from app.api.departamento.departamento_service import Departamento_Service
+from app.api.empleado.empleado_service import Empleado_Service
 from app.api.programacion.programacion_repository import ProgramacionRepository
+from app.api.registro.registro_repository import RegistroRepository
 from app.api.usuario.usuario_service import Usuario_Service
 from app.api.usuario_departamento.usuario_departamento_service import Usuario_Departamento_Service
 from app.extensions.slugify import Slugify
@@ -230,7 +232,7 @@ class Programacion_Service():
                 if existsProgramacion:
                     continue
                 
-                ProgramacionRepository.createProgramacion(
+                idProgramacion = ProgramacionRepository.createProgramacion(
                     db, 
                     fecha, 
                     idDepartment,
@@ -238,6 +240,11 @@ class Programacion_Service():
                     current_time, 
                     estado
                 )
+
+                empleados = Empleado_Service.getActiveEmpleadosByDepartment_service(db, idDepartment)
+
+                for e in empleados:
+                    RegistroRepository.createRegistroAutomatico(db, idProgramacion, e["idEmpleado"], fecha, e["idCentro"], e["badgeNumber"])
 
                 creados += 1    
                 

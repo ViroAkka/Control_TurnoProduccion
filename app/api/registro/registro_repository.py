@@ -492,6 +492,48 @@ class RegistroRepository:
         finally:
             if cursor:
                 cursor.close()
+    
+    @staticmethod
+    def createRegistroAutomatico(db, idProgramacion, idEmpleado, fecha, idCentro, badgeNumber):
+        cursor = None
+
+        try:
+            data = RegistroRepository.getRegistroByEmpleadoAndProgramacion(db, idEmpleado, idProgramacion)
+            
+            if data:
+                return {
+                    "error": f"El registro para el Usuario ya existe en la programación."
+                }
+
+            cursor = db.connection.cursor()
+            
+            query = """
+                INSERT INTO turnos_registro(idProgramacion, idEmpleado, fecha, idCentro, badgeNumber)
+                VALUES (%s, %s, %s, %s, %s)
+                """
+            cursor.execute(query, (idProgramacion, idEmpleado, fecha, idCentro, badgeNumber,))
+            
+            db.connection.commit()
+
+            newRegistro = {
+                "idRegistro": cursor.lastrowid, 
+                "idProgramacion": idProgramacion,
+                "idEmpleado": idEmpleado,
+                "fecha": fecha,
+                "idCentro": idCentro,
+                "badgeNumber": badgeNumber,
+            }
+
+            return
+        
+        except Exception as ex:
+            db.connection.rollback()
+            
+            return {"error": f"No se pudo crear registro en repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
 
     @staticmethod
     def updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo):
