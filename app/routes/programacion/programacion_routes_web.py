@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, abort, request, redirect, url_for
 from flask_login import login_required, current_user
 
 # Extensions
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -14,6 +15,7 @@ programacion_web_bp = Blueprint(
 
 @programacion_web_bp.route("/crearProgramacion_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("programacion.crear")
 def crearProgramacion_web():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
@@ -41,6 +43,7 @@ def crearProgramacion_web():
 
 @programacion_web_bp.route("/crearProgramacionAutomatica_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("programacion.crear")
 def crearProgramacionAutomatica_web():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
@@ -67,6 +70,7 @@ def crearProgramacionAutomatica_web():
 
 @programacion_web_bp.route("/crearProgramacionPorDepartamentosUsuario_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("programacion.crear")
 def crearProgramacionPorDepartamentosUsuario_web():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
@@ -109,6 +113,7 @@ def crearProgramacionPorDepartamentosUsuario_web():
 
 @programacion_web_bp.route("/cerrarProgramacion_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("programacion.editar")
 def cerrarProgramacion_web():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
@@ -155,6 +160,7 @@ def cerrarProgramacion_web():
 
 @programacion_web_bp.route("/reOpenProgramacion_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("programacion.editar")
 def reOpenProgramacion_web():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)
@@ -188,6 +194,7 @@ def reOpenProgramacion_web():
 
 @programacion_web_bp.route("/eliminarProgramacion_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("programacion.eliminar")
 def eliminarProgramacion_web():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)

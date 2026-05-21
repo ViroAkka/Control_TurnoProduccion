@@ -4,6 +4,7 @@ from flask_login import login_required
 from app.api.programacion.programacion_service import Programacion_Service
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.usuario.usuario_service import Usuario_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 programacion_template_bp = Blueprint(
@@ -26,6 +27,7 @@ def crearProgramacion_template():
 
 @programacion_template_bp.route("/listaProgramaciones")
 @login_required
+@permiso_requerido("programacion.ver")
 def listaProgramaciones_template():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db)
@@ -42,6 +44,7 @@ def listaProgramaciones_template():
 
 @programacion_template_bp.route("/editarProgramacion/<idDepartment>/<fecha>")
 @login_required
+@permiso_requerido("programacion.ver")
 def editarProgramacion_template(idDepartment, fecha):
     programaciones = Programacion_Service.getProgramaciones_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db)

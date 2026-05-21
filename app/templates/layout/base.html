@@ -42,7 +42,7 @@
 
     <div class="container-fluid">
       <div class="row">
-        {% if current_user.id == 1 %}
+        {% if current_user.tiene_permiso("panel.administrador") %}
         <div
           class="col-md-2 bg-light vh-100 shadow p-3 mb-5 bg-body-tertiary rounded"
         >
@@ -50,7 +50,9 @@
         </div>
         {% endif %}
 
-        <div class="{% if current_user.id == 1 %} col-md-10 p-4 {% endif %}">
+        <div
+          class="{% if current_user.tiene_permiso('panel.administrador') %} col-md-10 p-4 {% endif %}"
+        >
           {% block content %} {% endblock %}
         </div>
       </div>
@@ -59,4 +61,11 @@
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
   </body>
+  <script>
+    window.USER_CONTEXT = {
+        permisos: {{ current_user.permisos | tojson }},
+        departamentosUsuario: {{ current_user.departamentos | tojson }},
+        scopeGlobal: {{ current_user.scope_departamentos_global | tojson }}
+    }
+  </script>
 </html>
