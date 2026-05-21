@@ -49,22 +49,22 @@ class Empleado_Service():
             return {"error": f"No se pudo obtener empleados en el servicio: {str(ex)}"}
     
     @staticmethod
-    def getActiveEmpleados_service(db):
+    def getActiveEmpleadosByDepartment_service(db, idDeparment):
         try:
-            data = EmpleadoRepository.getActiveEmpleados(db)
+            data = EmpleadoRepository.getActiveEmpleadosByDepartment(db, idDeparment)
             empleados = []
             for row in data:
                 empleado = {
-                    "idEmpleado": row[0], 
-                    "badgeNumber": row[1], 
-                    "firstName": row[2], 
-                    "secondName": row[3], 
-                    "lastName": row[4], 
-                    "lastName2": row[5],
-                    "position": row[6], 
-                    "idDepartment": row[7],
-                    "activo": row[8],
-                    "idCentro": row[8],
+                    "idEmpleado": row["idEmpleado"],
+                    "badgeNumber": row["badgeNumber"],
+                    "firstName": row["firstName"],
+                    "secondName": row["secondName"],
+                    "lastName": row["lastName"],
+                    "lastName2": row["lastName2"],
+                    "position": row["position"],
+                    "idDepartment": row["idDepartment"],
+                    "activo": row["activo"],
+                    "idCentro": row["idCentro"],
                 }
                 empleados.append(empleado)
             return empleados

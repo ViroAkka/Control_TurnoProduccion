@@ -1,3 +1,5 @@
+import MySQLdb
+
 class EmpleadoRepository:
     @staticmethod
     def getEmpleadoById(db, id):
@@ -73,18 +75,18 @@ class EmpleadoRepository:
                 cursor.close()
 
     @staticmethod
-    def getActiveEmpleados(db):
+    def getActiveEmpleadosByDepartment(db, idDepartment):
         cursor = None
         
         try: 
-            cursor = db.connection.cursor()
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
 
             query = """
             SELECT * 
             FROM turnos_empleado
-            WHERE activo = 1
+            WHERE activo = 1 AND idDepartment = %s
             """
-            cursor.execute(query)
+            cursor.execute(query, (idDepartment,))
 
             empleados = cursor.fetchall()
 
