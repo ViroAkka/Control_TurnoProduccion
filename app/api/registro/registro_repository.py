@@ -426,7 +426,7 @@ class RegistroRepository:
                 cursor.close()
     
     @staticmethod
-    def createRegistro(db, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber):
+    def createRegistro(db, idRegistro, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo):
         cursor = None
 
         try:
@@ -440,10 +440,10 @@ class RegistroRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_registro(idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                INSERT INTO turnos_registro(idRegistro, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber))
+            cursor.execute(query, (idRegistro, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo,))
             
             db.connection.commit()
 
@@ -462,9 +462,27 @@ class RegistroRepository:
                 "fecha": fecha,
                 "idCentro": idCentro,
                 "badgeNumber": badgeNumber,
+                "cena_con_costo": cena_con_costo,
             }
 
-            return {"mensaje": f"Registro creado correctamente. ID: {newRegistro['idRegistro']}, ID Programacion: {newRegistro['idProgramacion']}, ID Empleado: {newRegistro['idEmpleado']}"}
+            return {
+                "idRegistro": cursor.lastrowid,
+                "idProgramacion": idProgramacion,
+                "idEmpleado": idEmpleado,
+                "hora_inicio": hora_inicio,
+                "hora_fin": hora_fin,
+                "idLinea": idLinea,
+                "idProceso": idProceso,
+                "aplica_almuerzo": aplica_almuerzo,
+                "aplica_cena": aplica_cena,
+                "aplica_transporte": aplica_transporte,
+                "observacion_transporte": observacion_transporte,
+                "fecha": fecha,
+                "idCentro": idCentro,
+                "badgeNumber": badgeNumber,
+                "cena_con_costo": cena_con_costo,
+                "_isNew": False
+            }
         
         except Exception as ex:
             db.connection.rollback()
@@ -476,18 +494,18 @@ class RegistroRepository:
                 cursor.close()
 
     @staticmethod
-    def updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber):
+    def updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo):
         cursor = None
 
         try: 
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_registro SET idEmpleado = %s, hora_inicio = %s, hora_fin = %s, idLinea = %s, idProceso = %s, aplica_almuerzo = %s, aplica_cena = %s, aplica_transporte = %s, observacion_transporte = %s, fecha = %s, idCentro = %s, badgeNumber = %s
+                UPDATE turnos_registro SET idEmpleado = %s, hora_inicio = %s, hora_fin = %s, idLinea = %s, idProceso = %s, aplica_almuerzo = %s, aplica_cena = %s, aplica_transporte = %s, observacion_transporte = %s, fecha = %s, idCentro = %s, badgeNumber = %s, cena_con_costo = %s
                 WHERE idRegistro = %s
                 """
             
-            cursor.execute(query, (idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, idRegistro,))
+            cursor.execute(query, (idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo, idRegistro, ))
             
             db.connection.commit()
 
@@ -505,6 +523,7 @@ class RegistroRepository:
                 "fecha": fecha,
                 "idCentro": idCentro,
                 "badgeNumber": badgeNumber,
+                "cena_con_costo": cena_con_costo,
             }
 
             return {"mensaje": f"Registro modificado correctamente. ID: {editedRegistro['idRegistro']}"}

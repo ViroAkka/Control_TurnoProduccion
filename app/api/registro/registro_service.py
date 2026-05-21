@@ -5,6 +5,9 @@ from app.api.proceso.proceso_service import Proceso_Service
 from app.api.programacion.programacion_service import Programacion_Service
 from app.api.registro.registro_repository import RegistroRepository
 
+import traceback
+from app.extensions.beneficios import calcular_beneficios
+
 class Registro_Service():
     @staticmethod
     def getRegistroById_service(db, id):
@@ -51,9 +54,10 @@ class Registro_Service():
                     "aplica_cena": row[8],
                     "aplica_transporte": row[9],
                     "observacion_transporte": row[10],
-                    "fecha": row[11].isoformat(),
+                    "fecha": row[11],
                     "idCentro": row[12],
                     "badgeNumber": row[13],
+                    "cena_con_costo": row[14],
                 }
                 registros.append(registro)
             return registros
@@ -82,6 +86,7 @@ class Registro_Service():
                     "fecha": row[11].isoformat(),
                     "idCentro": row[12],
                     "badgeNumber": row[13],
+                    "cena_con_costo": row[14],
                 }
                 registros.append(registro)
             return registros
@@ -100,8 +105,6 @@ class Registro_Service():
                     "idRegistro": row[0],
                     "idProgramacion": row[1],
                     "idEmpleado": row[2],
-                    "hora_inicio": str(row[3]) if row[3] else None,
-                    "hora_fin": str(row[4]) if row[4] else None,
                     "idLinea": row[5],
                     "idProceso": row[6],
                     "aplica_almuerzo": row[7],
@@ -111,7 +114,25 @@ class Registro_Service():
                     "fecha": row[11].isoformat(),
                     "idCentro": row[12],
                     "badgeNumber": row[13],
+                    "cena_con_costo": row[14],
                 }
+
+                hora_inicio = row[3]
+                hora_fin = row[4]
+                fecha = row[11]
+
+                registro["hora_inicio"] = str(row[3]) if row[3] else None
+                registro["hora_fin"] = str(row[4]) if row[4] else None
+
+                beneficios = calcular_beneficios(
+                    fecha,
+                    hora_inicio,
+                    hora_fin
+                )
+
+                registro["aplica_almuerzo"] = beneficios["aplica_almuerzo"]
+                registro["aplica_cena"] = beneficios["aplica_cena"]
+                registro["cena_con_costo"] = beneficios["cena_con_costo"]
 
                 dataEmpleado = Empleado_Service.getEmpleadoById_service(db, registro["idEmpleado"])
                 dataLinea = Linea_Service.getLineaById_service(db, registro["idLinea"])
@@ -127,7 +148,11 @@ class Registro_Service():
             return registros
 
         except Exception as ex:
-            return {"error": f"No se puede obtener registros desde el servicio: {str(ex)}"}
+            traceback.print_exc()
+
+            return {
+                "error": f"No se puede obtener registros desde el servicio: {str(ex)}"
+            }
         
     @staticmethod
     def getCount_aplica_cena_porProgramacion_service(db, idProgramacion):
@@ -172,6 +197,7 @@ class Registro_Service():
     @staticmethod
     def createRegistro_service(db, data):
         try:
+            idRegistro = data.get("idRegistro")
             idProgramacion = data.get("idProgramacion")
             idEmpleado = data.get("idEmpleado")
             hora_inicio = data.get("hora_inicio")
@@ -180,6 +206,7 @@ class Registro_Service():
             idProceso = data.get("idProceso")
             aplica_almuerzo = data.get("aplica_almuerzo")
             aplica_cena = data.get("aplica_cena")
+            cena_con_costo = data.get("cena_con_costo")
             aplica_transporte = data.get("aplica_transporte")
             observacion_transporte = data.get("observacion_transporte")
             fecha = data.get("fecha")
@@ -213,7 +240,7 @@ class Registro_Service():
                 return { "error": "La programación ya se encuentra cerrada." }
 
 
-            return RegistroRepository.createRegistro(db, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber)
+            return RegistroRepository.createRegistro(db,idRegistro, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
         
         except Exception as ex:
             return {"error": f"No se pudo crear el registro desde el servicio. {str(ex)}"}
@@ -227,8 +254,6 @@ class Registro_Service():
             hora_fin = data.get("hora_fin")
             idLinea = data.get("idLinea")
             idProceso = data.get("idProceso")
-            aplica_almuerzo = data.get("aplica_almuerzo")
-            aplica_cena = data.get("aplica_cena")
             aplica_transporte = data.get("aplica_transporte")
             observacion_transporte = data.get("observacion_transporte")
             fecha = data.get("fecha")
@@ -242,16 +267,22 @@ class Registro_Service():
                     "hora_fin": hora_fin,
                     "idLinea": idLinea,
                     "idProceso": idProceso,
-                    # "aplica_almuerzo": aplica_almuerzo,
-                    # "aplica_cena": aplica_cena,
-                    # "aplica_transporte": aplica_transporte,
-                    
                 }
             
             missing_fields = [key for key, value in required_fields.items() if value is None or value == ""]
 
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
+            
+            beneficios = calcular_beneficios(
+                fecha,
+                hora_inicio,
+                hora_fin
+            )
+
+            aplica_almuerzo = beneficios["aplica_almuerzo"]
+            aplica_cena = beneficios["aplica_cena"]
+            cena_con_costo = beneficios["cena_con_costo"]
             
             registro = RegistroRepository.getRegistroById(db, idRegistro)
 
@@ -260,7 +291,30 @@ class Registro_Service():
             if programacion["estado"] == "CERRADO":
                 return { "error": "La programación ya se encuentra cerrada." }
             
-            return RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber)
+            RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
+
+            print("FECHA:", fecha)
+            print("INICIO:", hora_inicio)
+            print("FIN:", hora_fin)
+            print("CENA CALCULADA:", cena_con_costo)
+            
+            return {
+                "success": True,
+                "idRegistro": idRegistro,
+                "aplica_almuerzo": aplica_almuerzo,
+                "aplica_cena": aplica_cena,
+                "cena_con_costo": cena_con_costo,
+                "idEmpleado": idEmpleado,
+                "hora_inicio": hora_inicio,
+                "hora_fin": hora_fin,
+                "idLinea": idLinea,
+                "idProceso": idProceso,
+                "aplica_transporte": aplica_transporte,
+                "observacion_transporte": observacion_transporte,
+                "fecha": fecha,
+                "idCentro": idCentro,
+                "badgeNumber": badgeNumber,
+            }
         
         except Exception as ex:
             return {"error": f"No se pudo modificar el registro desde el servicio. {str(ex)}"}
