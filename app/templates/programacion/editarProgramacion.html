@@ -144,8 +144,27 @@ message in messages %}
 
 <script>
   (async function () {
+    const feriadosGT = [
+      "01-01", // Año nuevo
+      "04-17", // Jueves Santo (ejemplo 2026, idealmente dinámico)
+      "04-18", // Viernes Santo
+      "05-01", // Día del trabajo
+      "06-30", // Ejército
+      "09-15", // Independencia
+      "10-20", // Revolución
+      "11-01", // Todos los santos
+      "12-24", // Noche buena medio día
+      "12-25", // Navidad
+      "12-31", // Fin de año medio día
+
+      // Villa Nueva
+      "05-28", // Feria titular Villa Nueva
+    ];
     const idProgramacion = "{{ programacion_actual.idProgramacion }}";
-    const fecha = new Date("{{ programacion_actual.fecha }}");
+    const [year, month, day] = "{{ programacion_actual.fecha }}"
+      .split("-")
+      .map(Number);
+    const fecha = new Date(year, month - 1, day);
     const canEdit = "{{ programacion_actual.estado }}" !== "CERRADO";
     console.log(fecha);
 
@@ -234,34 +253,6 @@ message in messages %}
           },
         },
         {
-          title: "Hora Inicio",
-          field: "hora_inicio",
-          editor: canEdit ? "time" : false,
-          // formatter: "datetime",
-          formatterParams: {
-            inputFormat: "HH:mm:ss",
-            outputFormat: "HH:mm:ss",
-          },
-
-          editorParams: {
-            format: "HH:mm:ss",
-          },
-        },
-        {
-          title: "Hora Fin",
-          field: "hora_fin",
-          editor: canEdit ? "time" : false,
-          // formatter: "datetime",
-          formatterParams: {
-            inputFormat: "HH:mm:ss",
-            outputFormat: "HH:mm",
-          },
-
-          editorParams: {
-            format: "HH:mm:ss",
-          },
-        },
-        {
           title: "Centro de costo",
           field: "idCentro",
 
@@ -306,6 +297,34 @@ message in messages %}
           },
         },
         {
+          title: "Hora Inicio",
+          field: "hora_inicio",
+          editor: canEdit ? "time" : false,
+          // formatter: "datetime",
+          formatterParams: {
+            inputFormat: "HH:mm:ss",
+            outputFormat: "HH:mm:ss",
+          },
+
+          editorParams: {
+            format: "HH:mm:ss",
+          },
+        },
+        {
+          title: "Hora Fin",
+          field: "hora_fin",
+          editor: canEdit ? "time" : false,
+          // formatter: "datetime",
+          formatterParams: {
+            inputFormat: "HH:mm:ss",
+            outputFormat: "HH:mm",
+          },
+
+          editorParams: {
+            format: "HH:mm:ss",
+          },
+        },
+        {
           title: "Almuerzo",
           field: "aplica_almuerzo",
           hozAlign: "center",
@@ -317,13 +336,24 @@ message in messages %}
           },
         },
         {
-          title: "Cena",
+          title: "Cena sin costo",
           field: "aplica_cena",
           hozAlign: "center",
           editor: false,
           formatter: function (cell) {
             return cell.getValue()
               ? "<span style='color:lime;'>&check;</span>"
+              : "<span style='color:red;'>&cross;</span>";
+          },
+        },
+        {
+          title: "Cena con costo",
+          field: "cena_con_costo",
+          hozAlign: "center",
+          editor: false,
+          formatter: function (cell) {
+            return cell.getValue()
+              ? "<span style='color:orange;'>&check;</span>"
               : "<span style='color:red;'>&cross;</span>";
           },
         },
@@ -432,7 +462,12 @@ message in messages %}
               let response;
 
               // CREATE
+
               if (data._isNew) {
+                if (!data.idRegistro && !data._isNew) {
+                  alert("Fila sin ID válido");
+                  return;
+                }
                 response = await fetch("/json/registro/create_registro", {
                   method: "POST",
                   headers: {
@@ -455,6 +490,7 @@ message in messages %}
               }
 
               const resp = await response.json();
+              refreshRowAndTotals(resp, row);
 
               if (resp.error) {
                 throw new Error(resp.error);
@@ -467,6 +503,8 @@ message in messages %}
                 _isDirty: false,
                 _saveStatus: "saved",
               });
+
+              recalcularTotales();
             } catch (error) {
               console.error(error);
 
@@ -494,6 +532,8 @@ message in messages %}
     });
 
     let updateTimeouts = {};
+
+    table.on("dataChanged", recalcularTotales);
 
     table.on("cellEdited", function (cell) {
       const row = cell.getRow();
@@ -535,32 +575,32 @@ message in messages %}
       }, 0);
     });
 
-    function recalcularTotales() {
-      /* console.log("ANTES:", table.getData());
+    function refreshRowAndTotals(resp, row) {
+      row.update(resp);
 
-       setTimeout(() => {
-         console.log("DESPUÉS:", table.getData());
-       }, 2000);
-  */
-      let data = table.getData();
+      // recalcular UI derivada
+      recalcularTotales();
+    }
+
+    function recalcularTotales() {
+      const data = table.getData();
 
       let almuerzos = 0;
       let cenas_sin_costo = 0;
       let cenas_con_costo = 0;
 
       data.forEach((row) => {
-        const entrada = parseHora(row.hora_inicio);
-        const horaEntrada = entrada.h;
-
-        if (row.aplica_almuerzo === 1 || row.aplica_almuerzo === true)
+        if (row.aplica_almuerzo === true || row.aplica_almuerzo === 1) {
           almuerzos++;
-        if (row.aplica_cena === 1 || row.aplica_cena === true)
+        }
+
+        if (row.aplica_cena === true || row.aplica_cena === 1) {
           cenas_sin_costo++;
-        if (
-          (row.aplica_cena === 0 || row.aplica_cena === false) &&
-          horaEntrada === 18
-        )
+        }
+
+        if (row.cena_con_costo === true || row.cena_con_costo === 1) {
           cenas_con_costo++;
+        }
       });
 
       document.querySelector(
@@ -572,56 +612,40 @@ message in messages %}
         cenas_con_costo;
     }
 
-    function calcularBeneficios(rowData) {
-      console.log(
-        `Calcular beneficios: ${rowData.hora_inicio} a ${rowData.hora_fin}`,
-      );
-
-      if (!rowData.hora_inicio || !rowData.hora_fin) return rowData;
-      console.log("hola función calcularBeneficios 2");
-
-      const entrada = parseHora(rowData.hora_inicio);
-      const salida = parseHora(rowData.hora_fin);
-      console.log({ entrada, salida });
-
-      const dia = fecha.getDay() + 1; // 6 = sábado
-
-      const horaEntrada = entrada.h;
-      const horaSalida = salida.h;
-      console.log({ horaEntrada, horaSalida, dia });
-
-      // Almuerzo
-      rowData.aplica_almuerzo =
-        dia === 6 && horaEntrada <= 7 && horaSalida >= 11;
-
-      // Cena
-      rowData.aplica_cena =
-        horaEntrada <= 5 &&
-        horaSalida >= 20 &&
-        horaSalida <= 23 &&
-        horaEntrada != 18;
-
-      return rowData;
-    }
-
-    function parseHora(horaStr) {
-      const [h, m, s] = horaStr.split(":").map(Number);
-      return { h, m, s };
-    }
-
-    function updateAlmuerzoOrCenaField(cell) {
+    async function updateAlmuerzoOrCenaField(cell) {
       const field = cell.getField();
 
       if (field === "hora_inicio" || field === "hora_fin") {
         const row = cell.getRow();
-        let data = row.getData();
+        const data = row.getData();
 
-        data = calcularBeneficios(data);
+        if (!data.idRegistro) return;
 
-        row.update({
-          aplica_almuerzo: data.aplica_almuerzo,
-          aplica_cena: data.aplica_cena,
-        });
+        try {
+          const response = await fetch(
+            `/json/registro/update_registro/${data.idRegistro}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            },
+          );
+
+          const resp = await response.json();
+          refreshRowAndTotals(resp, row);
+
+          row.update({
+            aplica_almuerzo: resp.aplica_almuerzo,
+            aplica_cena: resp.aplica_cena,
+            cena_con_costo: resp.cena_con_costo,
+          });
+
+          recalcularTotales();
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
 
@@ -672,21 +696,21 @@ message in messages %}
             fecha: fecha.toISOString().slice(0, 10),
             idProgramacion: idProgramacion,
 
-            /* idEmpleado: "",
-            badgeNumber: "",
-            idCentro: "",
+            // idEmpleado: "",
+            // badgeNumber: "",
+            // idCentro: "",
 
-            hora_inicio: "",
-            hora_fin: "",
+            hora_inicio: "00:00:00",
+            hora_fin: "00:00:00",
 
-            idLinea: "",
-            idProceso: "",
+            // idLinea: "",
+            // idProceso: "",
 
-            aplica_almuerzo: false,
-            aplica_cena: false,
-            aplica_transporte: false,
+            // aplica_almuerzo: false,
+            // aplica_cena: false,
+            // aplica_transporte: false,
 
-            observacion_transporte: "", */
+            // observacion_transporte: "",
           },
           false,
         );
