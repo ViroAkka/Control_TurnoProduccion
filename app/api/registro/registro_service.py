@@ -222,6 +222,7 @@ class Registro_Service():
                     "idProceso": idProceso,
                     # "aplica_almuerzo": aplica_almuerzo,
                     # "aplica_cena": aplica_cena,
+                    # "cena_con_costo": aplica_cena,
                     # "aplica_transporte": aplica_transporte,
                     # "observacion_transporte": observacion_transporte,
                     # "fecha": fecha,
@@ -234,11 +235,20 @@ class Registro_Service():
             if missing_fields:
                 return {"error": f"Faltan campos obligatorios: {', '.join(missing_fields)}"}
             
+            beneficios = calcular_beneficios(
+                fecha,
+                hora_inicio,
+                hora_fin
+            )
+
+            aplica_almuerzo = beneficios["aplica_almuerzo"]
+            aplica_cena = beneficios["aplica_cena"]
+            cena_con_costo = beneficios["cena_con_costo"]
+            
             programacion = Programacion_Service.getProgramacionByIdProgramacion_service(db, idProgramacion)
 
             if programacion["estado"] == "CERRADO":
                 return { "error": "La programación ya se encuentra cerrada." }
-
 
             return RegistroRepository.createRegistro(db,idRegistro, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
         
