@@ -131,17 +131,20 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   grid-template-rows: repeat(6, 1fr);
-  gap: 8px;
+  gap: 0px;
+
+  /* border: 4px inset; */
+  /* padding: 1.5rem; */
 }
 
 .dia-fecha-text__programacion {
-  grid-column: span 2 / span 2;
+  grid-column: span 1 / span 1;
 
   font-weight: bold;
 }
 
 .departamento-text__programacion {
-  grid-column: span 2 / span 2;
+  grid-column: span 1 / span 1;
   grid-column-start: 1;
   grid-row-start: 2;
 
@@ -149,7 +152,7 @@
 }
 
 .elaborado-por__programacion {
-  grid-column: span 2 / span 2;
+  grid-column: span 1 / span 1;
   grid-column-start: 1;
   grid-row-start: 3;
 
@@ -180,62 +183,84 @@
 .cena-sin-costo-data__programacion {
   grid-column-start: 2;
   grid-row-start: 4;
+
+  text-align: center;
 }
 
 .cena-con-costo-data__programacion {
   grid-column-start: 2;
   grid-row-start: 5;
+
+  text-align: center;
 }
 
 .almuerzos-sin-costo-data__programacion {
   grid-column-start: 2;
   grid-row-start: 6;
+
+  text-align: center;
 }
 
 .dia-fecha-data__programacion {
-  grid-column: span 3 / span 3;
-  grid-column-start: 3;
+  grid-column: span 2 / span 1;
+  grid-column-start: 2;
   grid-row-start: 1;
 }
 
 .departamento-data__programacion {
-  grid-column: span 3 / span 3;
-  grid-column-start: 3;
+  grid-column: span 2 / span 1;
+  grid-column-start: 2;
   grid-row-start: 2;
 }
 
 .elaborado-por-data__programacion {
-  grid-column: span 3 / span 3;
-  grid-column-start: 3;
+  grid-column: span 2 / span 1;
+  grid-column-start: 2;
   grid-row-start: 3;
 }
 
 .horario-diurno-text__programacion {
-  grid-column: span 2 / span 2;
-  grid-column-start: 6;
+  grid-column: span 2 / span 1;
+  grid-column-start: 3;
   grid-row-start: 1;
+}
 
-  font-weight: bold;
+.horario-diurno-data__programacion {
+  grid-column: span 2 / span 1;
+  grid-column-start: 4;
+  grid-row-start: 1;
 }
 
 .horario-nocturno-text__programacion {
-  grid-column: span 2 / span 2;
-  grid-column-start: 6;
+  grid-column: span 1 / span 1;
+  grid-column-start: 3;
   grid-row-start: 2;
+}
 
-  font-weight: bold;
+.horario-nocturno-data__programacion {
+  grid-column: span 1 / span 1;
+  grid-column-start: 4;
+  grid-row-start: 2;
+}
+
+.horario-bus-text__programacion {
+  grid-column-start: 3;
+  grid-row-start: 3;
+}
+
+.horario-bus-data__programacion {
+  grid-column-start: 4;
+  grid-row-start: 3;
 }
 
 .asueto-text__programacion {
-  grid-column-start: 6;
-  grid-row-start: 3;
-
-  font-weight: bold;
+  grid-column-start: 3;
+  grid-row-start: 4;
 }
 
 .asueto-data__programacion {
-  grid-column-start: 7;
-  grid-row-start: 3;
+  grid-column-start: 4;
+  grid-row-start: 4;
 }
 
 .btn-cerrar__programacion {
@@ -245,15 +270,58 @@
 }
 
 .estado-text__programacion {
-  grid-column-start: 6;
+  grid-row: span 2 / span 2;
+  grid-column-start: 3;
   grid-row-start: 5;
-
-  font-weight: bold;
 }
 
 .estado-data__programacion {
-  grid-column-start: 7;
+  grid-row: span 2 / span 2;
+  grid-column-start: 4;
   grid-row-start: 5;
 }
 
+.card-tabla-totales {
+  margin: 0 8px;
+  grid-column: span 3 / span 3;
+  grid-row: span 7 / span 7;
+  grid-column-start: 5;
+  grid-row-start: 1;
+  border: 1px solid white;
+}
+
+.encabezado__text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid;
+  text-align: center;
+}
+
+.encabezado__text-bold {
+  font-weight: bold;
+}
+
+.encabezado__text-yellow {
+  /* background-color: #fbff0259; */
+  /* padding: 0px 2px; */
+}
+
+.encabezado__text-horario {
+}
+
+.red-row {
+  color: black !important;
+  background-color: rgba(255, 0, 0, 0.568) !important;
+}
+
+.red-row:hover {
+  color: black !important;
+  background-color: rgb(214, 24, 24) !important;
+}
+
+.bg-tabla-totales {
+  border: 1px solid white;
+}
 /* tabulator */
