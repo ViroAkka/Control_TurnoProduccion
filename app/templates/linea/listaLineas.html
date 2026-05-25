@@ -62,8 +62,16 @@ endblock %} {% block content %}
               >
             </p>
           </th>
-          <th></th>
-          <th></th>
+          <th scope="col">
+            <p class="title_column" onclick="ordenarTabla(3, 'numero')">
+              Mínimo requerido
+              <span class="arrow" data-type="darr" data-column="3">&darr;</span
+              ><span class="arrow" data-type="uarr" data-column="3"
+                >&uarr;</span
+              >
+            </p>
+          </th>
+          <th scope="col">Acciones</th>
         </tr>
       </thead>
       <tbody class="tbody-list">
@@ -75,184 +83,36 @@ endblock %} {% block content %}
             {% for d in departamentos %} {% if d.idDepartment ==
             l.idDepartment%} {{ d.name }} {% endif %} {% endfor %}
           </td>
+          <td>{{ l.minimo_requerido }}</td>
           <td>
-            <button
-              type="button"
-              class="btn btn-warning"
-              data-bs-toggle="modal"
-              data-bs-target="#editModal{{ l.idLinea }}"
-            >
-              <img src="/static/img/edit-icon.png" height="15px" width="15px" />
-              <strong>Editar</strong>
-            </button>
-            <!-- Modal -->
-            <div
-              class="modal fade"
-              id="editModal{{ l.idLinea }}"
-              tabindex="-1"
-              aria-labelledby="modalLabel"
-              aria-hidden="true"
-            >
-              <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="modalLabel">
-                      Editar línea
-                    </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                  <div class="modal-body">
-                    <form
-                      class="form"
-                      role="form"
-                      action="/web/linea/editarLinea_web"
-                      method="POST"
-                    >
-                      <div class="form-group">
-                        <label hidden for="idLinea">ID de la línea</label>
-                        <input
-                          type="number"
-                          class="form-control"
-                          id="idLinea"
-                          name="idLinea"
-                          title="ID de la línea"
-                          min="1"
-                          required
-                          value="{{ l.idLinea }}"
-                          readonly
-                          hidden
-                        />
-                      </div>
+            <div class="d-flex justify-content-between">
+              <button
+                type="button"
+                class="btn btn-warning"
+                data-bs-toggle="modal"
+                data-bs-target="#editModal{{ l.idLinea }}"
+              >
+                <img
+                  src="/static/img/edit-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong>Editar</strong>
+              </button>
 
-                      <div class="form-group">
-                        <label for="nameLinea">Nombre de la línea</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="nameLinea"
-                          name="nameLinea"
-                          title="Nombre de la línea"
-                          min="1"
-                          required
-                          value="{{ l.nameLinea }}"
-                        />
-                      </div>
-
-                      <div class="form-group">
-                        <label for="idDepartment"
-                          >Departamento al que corresponde la línea</label
-                        >
-                        <select
-                          type="text"
-                          class="form-control"
-                          id="idDepartment"
-                          name="idDepartment"
-                          title="Departamento al que corresponde la línea"
-                          required
-                        >
-                          <option disabled value="{{ None }}">
-                            -- Seleccione una opción --
-                          </option>
-
-                          {% for d in departamentos %} {% if d.idDepartment ==
-                          l.idDepartment %}
-                          <option value="{{ d.idDepartment }}" selected>
-                            {{ d.name }}
-                          </option>
-                          {% else %}
-                          <option value="{{ d.idDepartment }}">
-                            {{ d.name }}
-                          </option>
-                          {% endif %} {% endfor %}
-                        </select>
-                      </div>
-
-                      <hr />
-                      <div class="d-flex justify-content-end">
-                        <button
-                          type="button"
-                          class="btn btn-secondary btn-lg m-1"
-                          data-bs-dismiss="modal"
-                        >
-                          Cerrar
-                        </button>
-                        <button
-                          type="submit"
-                          class="btn btn-success btn-lg btn-block m-1"
-                        >
-                          Confirmar
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </td>
-          <td>
-            <button
-              type="button"
-              class="btn btn-danger"
-              data-bs-toggle="modal"
-              data-bs-target="#deleteModal{{ l.idLinea }}"
-            >
-              <img
-                src="/static/img/delete-icon.png"
-                height="15px"
-                width="15px"
-              />
-              <strong>Eliminar</strong>
-            </button>
-            <div
-              class="modal fade"
-              id="deleteModal{{ l.idLinea }}"
-              tabindex="-1"
-            >
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">
-                      Eliminar línea
-                    </h1>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                  <div class="modal-body">
-                    <p>
-                      ¿Seguro que quiere eliminar el registro {{ l.idLinea }}?
-                    </p>
-                  </div>
-                  <div class="modal-footer">
-                    <button
-                      type="button"
-                      class="btn btn-secondary btn-lg"
-                      data-bs-dismiss="modal"
-                    >
-                      Cerrar
-                    </button>
-                    <form action="/web/linea/eliminarLinea_web" method="POST">
-                      <input
-                        type="number"
-                        value="{{l.idLinea}}"
-                        name="idLinea"
-                        hidden
-                      />
-                      <button type="submit" class="btn btn-danger btn-lg">
-                        Eliminar
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              </div>
+              <button
+                type="button"
+                class="btn btn-danger"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteModal{{ l.idLinea }}"
+              >
+                <img
+                  src="/static/img/delete-icon.png"
+                  height="15px"
+                  width="15px"
+                />
+                <strong>Eliminar</strong>
+              </button>
             </div>
           </td>
         </tr>
@@ -263,4 +123,156 @@ endblock %} {% block content %}
   </div>
 </div>
 
-{% endblock %}
+{% for l in lineas %}
+
+<!-- EditModal -->
+<div
+  class="modal fade"
+  id="editModal{{ l.idLinea }}"
+  tabindex="-1"
+  aria-labelledby="modalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modalLabel">Editar línea</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          class="form"
+          role="form"
+          action="/web/linea/editarLinea_web"
+          method="POST"
+        >
+          <div class="form-group">
+            <label hidden for="idLinea">ID de la línea</label>
+            <input
+              type="number"
+              class="form-control"
+              id="idLinea"
+              name="idLinea"
+              title="ID de la línea"
+              min="1"
+              required
+              value="{{ l.idLinea }}"
+              readonly
+              hidden
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="nameLinea">Nombre de la línea</label>
+            <input
+              type="text"
+              class="form-control"
+              id="nameLinea"
+              name="nameLinea"
+              title="Nombre de la línea"
+              min="1"
+              required
+              value="{{ l.nameLinea }}"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="idDepartment"
+              >Departamento al que corresponde la línea</label
+            >
+            <select
+              type="text"
+              class="form-control"
+              id="idDepartment"
+              name="idDepartment"
+              title="Departamento al que corresponde la línea"
+              required
+            >
+              <option disabled value="{{ None }}">
+                -- Seleccione una opción --
+              </option>
+
+              {% for d in departamentos %} {% if d.idDepartment ==
+              l.idDepartment %}
+              <option value="{{ d.idDepartment }}" selected>
+                {{ d.name }}
+              </option>
+              {% else %}
+              <option value="{{ d.idDepartment }}">{{ d.name }}</option>
+              {% endif %} {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="minimo_requerido"
+              >Número de empleados requeridos por línea</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="minimo_requerido"
+              name="minimo_requerido"
+              title="Número de empleados requeridos por línea"
+              min="1"
+              required
+              value="{{ l.minimo_requerido }}"
+            />
+          </div>
+
+          <hr />
+          <div class="d-flex justify-content-end">
+            <button
+              type="button"
+              class="btn btn-secondary btn-lg m-1"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button type="submit" class="btn btn-success btn-lg btn-block m-1">
+              Confirmar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DeleteModal -->
+<div class="modal fade" id="deleteModal{{ l.idLinea }}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Eliminar línea</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Seguro que quiere eliminar el registro {{ l.idLinea }}?</p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <form action="/web/linea/eliminarLinea_web" method="POST">
+          <input type="number" value="{{l.idLinea}}" name="idLinea" hidden />
+          <button type="submit" class="btn btn-danger btn-lg">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %} {% endblock %}
