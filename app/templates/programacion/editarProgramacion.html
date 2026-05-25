@@ -206,20 +206,28 @@ message in messages %}
   const idProgramacion = "{{ programacion_actual.idProgramacion }}";
   const feriadosGT = [
     "01-01", // Año nuevo
-    "04-17", // Jueves Santo (ejemplo 2026, idealmente dinámico)
-    "04-18", // Viernes Santo
-    "05-01", // Día del trabajo
-    "06-30", // Ejército
-    "09-15", // Independencia
-    "10-20", // Revolución
-    "11-01", // Todos los santos
-    "12-24", // Noche buena medio día
+    "05-01", // Día del Trabajador
+    "06-30", // Día del Ejército
+    "09-15", // Día de la Independencia
+    "10-20", // Día de la REvolución de 1944
+    "11-01", // Día de Todos los Santos
     "12-25", // Navidad
-    "12-31", // Fin de año medio día
 
     // Villa Nueva
-    "05-28", // Feria titular Villa Nueva
+    "12-08", // Feriado en Villa Nueva
   ];
+
+  (function asignarFeriado() {
+    const dataAsueto = document.querySelector(".asueto-data__programacion");
+    const fechaMesDia = `${month}-${day}`;
+    console.log(fechaMesDia);
+
+    if (feriadosGT.includes(fechaMesDia)) {
+      dataAsueto.textContent = "SÍ";
+    } else {
+      dataAsueto.textContent = "NO";
+    }
+  })();
 
   (async function () {
     const [year, month, day] = "{{ programacion_actual.fecha }}"
@@ -615,6 +623,12 @@ message in messages %}
 
       recalcularTotales();
 
+      const field = cell.getField();
+
+      if (field === "idLinea") {
+        // actualizarTotalesPorLinea();
+      }
+
       const id = data.idRegistro;
 
       if (!id) return;
@@ -624,18 +638,21 @@ message in messages %}
       }
 
       // Espera 800ms antes de guardar (debounce)
-      updateTimeouts[id] = setTimeout(() => {
-        fetch(`/json/registro/update_registro/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        })
-          .then((res) => res.json())
-          .then((resp) => {
-            if (resp.error) {
-              // alert(resp.error);
-            }
+      updateTimeouts[id] = setTimeout(async () => {
+        try {
+          const response = await fetch(`/json/registro/update_registro/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
           });
+          const resp = await response.json();
+          if (resp.error) {
+            return;
+          }
+          await actualizarTotalesPorLinea();
+        } catch (error) {
+          console.error(error);
+        }
       }, 800);
     });
 
@@ -874,6 +891,24 @@ message in messages %}
       }
     },
   });
+
+  let updatingTotals = false;
+
+  async function actualizarTotalesPorLinea() {
+    if (updatingTotals) return;
+
+    updatingTotals = true;
+
+    try {
+      await table2.replaceData(
+        `/json/programacion/get_counts_by_line/${idProgramacion}`,
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      updatingTotals = false;
+    }
+  }
 </script>
 
 {% endblock %}
