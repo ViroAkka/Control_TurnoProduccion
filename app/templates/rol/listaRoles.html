@@ -71,7 +71,9 @@ endblock %} {% block content %}
               >
             </p>
           </th>
-          <th></th>
+          <th scope="col">
+            <p>Acciones</p>
+          </th>
         </tr>
       </thead>
       <tbody class="tbody-list">
@@ -88,7 +90,7 @@ endblock %} {% block content %}
           </td>
           {% if r.idRol != 1%}
           <td>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between gap-2">
               <button
                 type="button"
                 class="btn btn-warning"

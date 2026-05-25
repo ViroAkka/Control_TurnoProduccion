@@ -3,6 +3,7 @@ from flask_login import logout_user, login_required
 
 # Extensions
 from app.api.permiso.permiso_service import Permiso_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -18,6 +19,7 @@ usuario_permiso_web_bp = Blueprint(
 
 @usuario_permiso_web_bp.route("/crearUsuario_Permiso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario_permiso.crear")
 def crearUsuario_Permiso_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
     usuario_permisos = Usuario_Permiso_Service.getUsuario_Permisos_service(db)
@@ -57,6 +59,7 @@ def crearUsuario_Permiso_web():
 
 @usuario_permiso_web_bp.route("/editarUsuario_Permiso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario_permiso.editar")
 def editarUsuario_Permiso_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
     usuario_permisos = Usuario_Permiso_Service.getUsuario_Permisos_service(db)
@@ -96,6 +99,7 @@ def editarUsuario_Permiso_web():
 
 @usuario_permiso_web_bp.route("/eliminarUsuario_Permiso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario_permiso.eliminar")
 def eliminarUsuario_Permiso_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
     permisos = Permiso_Service.getPermisos_service(db)

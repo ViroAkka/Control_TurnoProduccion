@@ -3,6 +3,7 @@ from flask_login import login_required
 
 # Extensions
 from app.api.departamento.departamento_service import Departamento_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 from app.api.rol.rol_service import Rol_Service
@@ -14,6 +15,7 @@ rol_web_bp = Blueprint(
 
 @rol_web_bp.route("/crearRol_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("rol.crear")
 def crearRol_web():
     roles = Rol_Service.getRoles_service(db)
 
@@ -36,6 +38,7 @@ def crearRol_web():
 
 @rol_web_bp.route("/editarRol_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("rol.editar")
 def editarRol_web():
     roles = Rol_Service.getRoles_service(db)
     
@@ -68,6 +71,7 @@ def editarRol_web():
 
 @rol_web_bp.route("/eliminarRol_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("rol.eliminar")
 def eliminarRol_web():
     roles = Rol_Service.getRoles_service(db)
     

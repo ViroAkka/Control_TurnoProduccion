@@ -6,14 +6,19 @@ import os
 import subprocess
 import tempfile
 
+from flask_login import login_required
+
 from app.api.programacion.programacion_service import Programacion_Service
 from app.api.registro.registro_service import Registro_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.reports.excel.programacion_report import (generar_reporte_programacion)
 
 reports_json_bp = Blueprint("reports_json_pb", __name__)
 
 @reports_json_bp.route("/programacion/descargar_programacion/<int:idProgramacion>/isPDF=<int:isPDF>")
+@login_required
+@permiso_requerido("programacion.ver")
 def descargar_programacion(idProgramacion, isPDF):
     programacion_detalles = Programacion_Service.getDetallesProgramacionByIdProgramacion_service(db, idProgramacion)
     registros_detalles = Registro_Service.getDetalleRegistrosByProgramacion_service(db, idProgramacion)

@@ -3,6 +3,7 @@ from flask_login import logout_user, login_required
 
 # Extensions
 from app.api.departamento.departamento_service import Departamento_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -18,6 +19,7 @@ usuario_departamento_web_bp = Blueprint(
 
 @usuario_departamento_web_bp.route("/crearUsuario_Departamento_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario_departamento.crear")
 def crearUsuario_Departamento_web():
     if request.method == "POST":
         data = {
@@ -44,6 +46,7 @@ def crearUsuario_Departamento_web():
 
 @usuario_departamento_web_bp.route("/eliminarUsuario_Departamento_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario_departamento.eliminar")
 def eliminarUsuario_Departamento_web():
     if request.method == "POST":
         data = {

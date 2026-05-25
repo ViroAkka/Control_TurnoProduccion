@@ -1,10 +1,13 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.empleado.empleado_service import Empleado_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 empleado_json_bp = Blueprint("empleado_json_bp", __name__)
 
 @empleado_json_bp.route("/get_empleados", methods=["GET"])
+@login_required
 def get_empleados():
     data = Empleado_Service.getEmpleados_service(db)
     if not data:

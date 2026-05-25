@@ -3,6 +3,7 @@ from flask_login import login_required
 
 # Extensions
 from app.api.departamento.departamento_service import Departamento_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 from app.api.proceso.proceso_service import Proceso_Service
@@ -14,6 +15,7 @@ proceso_web_bp = Blueprint(
 
 @proceso_web_bp.route("/crearProceso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("proceso.crear")
 def crearProceso_web():
     procesos = Proceso_Service.getProcesos_service(db)
 
@@ -36,6 +38,7 @@ def crearProceso_web():
 
 @proceso_web_bp.route("/editarProceso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("proceso.editar")
 def editarProceso_web():
     procesos = Proceso_Service.getProcesos_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db);
@@ -72,6 +75,7 @@ def editarProceso_web():
 
 @proceso_web_bp.route("/eliminarProceso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("proceso.eliminar")
 def eliminarProceso_web():
     procesos = Proceso_Service.getProcesos_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db);

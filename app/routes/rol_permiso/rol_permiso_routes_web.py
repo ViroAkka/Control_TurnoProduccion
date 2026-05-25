@@ -3,6 +3,7 @@ from flask_login import logout_user, login_required
 
 # Extensions
 from app.api.rol.rol_service import Rol_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -19,6 +20,7 @@ rol_permiso_web_bp = Blueprint(
 
 @rol_permiso_web_bp.route("/crearRol_Permiso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("rol_permiso.crear")
 def crearRol_Permiso_web():
     if request.method == "POST":
         data = {
@@ -45,6 +47,7 @@ def crearRol_Permiso_web():
 
 @rol_permiso_web_bp.route("/editarRol_Permiso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("rol_permiso.editar")
 def editarRol_Permiso_web():
     if request.method == "POST":
         data = {
@@ -71,6 +74,7 @@ def editarRol_Permiso_web():
 
 @rol_permiso_web_bp.route("/eliminarRol_Permiso_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("rol_permiso.eliminar")
 def eliminarRol_Permiso_web():
     if request.method == "POST":
         data = {

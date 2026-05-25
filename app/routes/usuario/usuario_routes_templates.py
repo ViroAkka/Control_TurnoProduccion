@@ -25,6 +25,7 @@ def login():
 
 @usuario_template_bp.route("/crearUsuario")
 @login_required
+@permiso_requerido("usuario.crear")
 def crearUsuario_template():
     usuarios = Usuario_Service.getUsuarios_service(db)
     roles = Rol_Service.getRoles_service(db)

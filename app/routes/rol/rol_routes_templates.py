@@ -7,6 +7,7 @@ from app.api.departamento.departamento_service import Departamento_Service
 from app.api.rol_permiso.rol_permiso_service import Rol_Permiso_Service
 from app.api.rol_ruta.rol_ruta_service import Rol_Ruta_Service
 from app.api.ruta.ruta_service import Ruta_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 rol_template_bp = Blueprint(
@@ -17,6 +18,7 @@ rol_template_bp = Blueprint(
 
 @rol_template_bp.route("/crearRol")
 @login_required
+@permiso_requerido("rol.crear")
 def crearRol_template():
     roles = Rol_Service.getRoles_service(db)
     rutas = Ruta_Service.getRutasDESC_service(db)
@@ -35,6 +37,7 @@ def crearRol_template():
 
 @rol_template_bp.route("/listaRoles")
 @login_required
+@permiso_requerido("rol.ver")
 def listaRoles_template():
     roles = Rol_Service.getRoles_service(db)
     rutas = Ruta_Service.getRutas_service(db)

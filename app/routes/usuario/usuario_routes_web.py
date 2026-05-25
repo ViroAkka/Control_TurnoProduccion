@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, abort, request, redirect, session,
 from flask_login import logout_user, login_required
 
 # Extensions
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -43,6 +44,7 @@ def logout():
 
 @usuario_web_bp.route("/crearUsuario_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario.crear")
 def crearUsuario_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
 
@@ -69,6 +71,7 @@ def crearUsuario_web():
 
 @usuario_web_bp.route("/editarUsuario_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario.editar")
 def editarUsuario_web():
     
     if request.method == "POST":
@@ -101,6 +104,7 @@ def editarUsuario_web():
 
 @usuario_web_bp.route("/eliminarUsuario_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario.eliminar")
 def eliminarUsuario_web():
     if request.method == "POST":
         data = {
@@ -127,6 +131,7 @@ def eliminarUsuario_web():
 
 @usuario_web_bp.route("/cambiarPasswordUsuario_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario.editar")
 def cambiarPasswordUsuario_web():
     if request.method == "POST":
         data = {

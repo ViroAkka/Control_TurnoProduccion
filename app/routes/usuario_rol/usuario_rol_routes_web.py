@@ -3,6 +3,7 @@ from flask_login import logout_user, login_required
 
 # Extensions
 from app.api.rol.rol_service import Rol_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -19,6 +20,7 @@ usuario_rol_web_bp = Blueprint(
 
 @usuario_rol_web_bp.route("/crearUsuario_Rol_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario_rol.crear")
 def crearUsuario_Rol_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
     usuario_roles = Usuario_Rol_Service.getUsuario_Roles_service(db)
@@ -58,10 +60,9 @@ def crearUsuario_Rol_web():
 
 @usuario_rol_web_bp.route("/editarUsuario_Rol_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario_rol.editar")
 def editarUsuario_Rol_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
-    usuario_roles = Usuario_Rol_Service.getUsuario_Roles_service(db)
-    roles = Rol_Service.getRoles_service(db)
 
     if request.method == "POST":
         data = {
@@ -93,6 +94,7 @@ def editarUsuario_Rol_web():
 
 @usuario_rol_web_bp.route("/eliminarUsuario_Rol_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("usuario_rol.eliminar")
 def eliminarUsuario_Rol_web():
     usuarios = Usuario_Service.getUsuarios_service(db)
     roles = Rol_Service.getRoles_service(db)

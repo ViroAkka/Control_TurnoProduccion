@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.registro.registro_service import Registro_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
@@ -6,6 +7,7 @@ from app.extensions.db import db
 registro_json_bp = Blueprint("registro_json_pb", __name__)
 
 @registro_json_bp.route("/get_registros/<int:idProgramacion>", methods=["GET"])
+@login_required
 @permiso_requerido("registro.ver")
 def get_registros(idProgramacion):
     data = Registro_Service.getRegistrosByProgramacion_service(db, idProgramacion)
@@ -15,6 +17,7 @@ def get_registros(idProgramacion):
     return jsonify(data), 200
 
 @registro_json_bp.route("/create_registro", methods=["POST"])
+@login_required
 @permiso_requerido("registro.crear")
 def create_registro():
     data = request.get_json()
@@ -25,6 +28,7 @@ def create_registro():
     return jsonify(result), 201
 
 @registro_json_bp.route("/update_registro/<int:idRegistro>", methods=["PUT"])
+@login_required
 @permiso_requerido("registro.editar")
 def update_registro(idRegistro):
     data = request.get_json()
@@ -36,6 +40,7 @@ def update_registro(idRegistro):
     return jsonify(result), 200
 
 @registro_json_bp.route("/delete_registro/<int:idRegistro>", methods=["DELETE"])
+@login_required
 @permiso_requerido("registro.eliminar")
 def delete_registro(idRegistro):
     result = Registro_Service.deleteRegistro_service(db, {"idRegistro": idRegistro})

@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, abort, request, redirect, url_for
 from flask_login import login_required
 
 # Extensions
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -14,6 +15,7 @@ departamento_web_bp = Blueprint(
 
 @departamento_web_bp.route("/crearDepartamento_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("departamento.crear")
 def crearDepartamento_web():
     if request.method == "POST":
         data = {
@@ -34,6 +36,7 @@ def crearDepartamento_web():
 
 @departamento_web_bp.route("/editarDepartamento_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("departamento.editar")
 def editarDepartamento_web():
     if request.method == "POST":
         data = {
@@ -55,6 +58,7 @@ def editarDepartamento_web():
 
 @departamento_web_bp.route("/eliminarDepartamento_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("departamento.eliminar")
 def eliminarDepartamento_web():
     if request.method == "POST":
         data = {

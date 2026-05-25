@@ -3,6 +3,7 @@ from flask_login import login_required
 
 # Extensions
 from app.api.departamento.departamento_service import Departamento_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 from app.api.linea.linea_service import Linea_Service
@@ -14,6 +15,7 @@ linea_web_bp = Blueprint(
 
 @linea_web_bp.route("/crearLinea_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("linea.crear")
 def crearLinea_web():
     lineas = Linea_Service.getLineas_service(db)
 
@@ -36,6 +38,7 @@ def crearLinea_web():
 
 @linea_web_bp.route("/editarLinea_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("linea.editar")
 def editarLinea_web():
     lineas = Linea_Service.getLineas_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db);
@@ -72,6 +75,7 @@ def editarLinea_web():
 
 @linea_web_bp.route("/eliminarLinea_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("linea.eliminar")
 def eliminarLinea_web():
     lineas = Linea_Service.getLineas_service(db)
     departamentos = Departamento_Service.getDepartamentos_service(db);

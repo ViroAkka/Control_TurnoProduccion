@@ -15,6 +15,7 @@ programacion_template_bp = Blueprint(
 
 @programacion_template_bp.route("/crearProgramacion")
 @login_required
+@permiso_requerido("programacion.crear")
 def crearProgramacion_template():
     programaciones = Programacion_Service.getProgramaciones_service(db)
     programaciones_borrador = Programacion_Service.getProgramacionesEnBorrador_service(db)

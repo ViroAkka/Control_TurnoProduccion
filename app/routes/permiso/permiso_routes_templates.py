@@ -3,6 +3,7 @@ from flask_login import login_required
 
 from app.api.departamento.departamento_service import Departamento_Service
 from app.api.permiso.permiso_service import Permiso_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 permiso_template_bp = Blueprint(
@@ -13,6 +14,7 @@ permiso_template_bp = Blueprint(
 
 @permiso_template_bp.route("/crearPermiso")
 @login_required
+@permiso_requerido("permiso.crear")
 def crearPermiso_template():
     departamentos = Departamento_Service.getDepartamentos_service(db)
 
@@ -23,6 +25,7 @@ def crearPermiso_template():
 
 @permiso_template_bp.route("/listaPermisos")
 @login_required
+@permiso_requerido("permiso.ver")
 def listaPermisos_template():
     departamentos = Departamento_Service.getDepartamentos_service(db)
     permisos = Permiso_Service.getPermisos_service(db)

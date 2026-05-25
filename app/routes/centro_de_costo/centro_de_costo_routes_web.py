@@ -3,6 +3,7 @@ from flask_login import login_required
 
 # Extensions
 from app.api.departamento.departamento_service import Departamento_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
@@ -14,6 +15,7 @@ centro_de_costo_web_bp = Blueprint(
 
 @centro_de_costo_web_bp.route("/crearCentro_de_costo_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("centro_de_costo.crear")
 def crearCentro_de_costo_web():
     if request.method == "POST":
         data = {
@@ -34,6 +36,7 @@ def crearCentro_de_costo_web():
 
 @centro_de_costo_web_bp.route("/editarCentro_de_costo_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("centro_de_costo.editar")
 def editarCentro_de_costo_web():
     if request.method == "POST":
         data = {
@@ -55,6 +58,7 @@ def editarCentro_de_costo_web():
 
 @centro_de_costo_web_bp.route("/eliminarCentro_de_costo_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("centro_de_costo.eliminar")
 def eliminarCentro_de_costo_web():
     if request.method == "POST":
         data = {

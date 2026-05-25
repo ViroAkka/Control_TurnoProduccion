@@ -1,10 +1,13 @@
 from flask import Blueprint, jsonify, request
+from flask_login import login_required
 from app.api.centro_de_costo.centro_de_costo_service import Centro_de_costo_Service
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 
 centro_de_costo_json_bp = Blueprint("centro_de_costo_json_bp", __name__)
 
 @centro_de_costo_json_bp.route("/get_centros_de_costo", methods=["GET"])
+@login_required
 def get_centros_de_costo():
     data = Centro_de_costo_Service.getCentros_de_costo_service(db)
     if not data:
@@ -13,6 +16,7 @@ def get_centros_de_costo():
     return jsonify(data), 200
 
 @centro_de_costo_json_bp.route("/get_centros_de_costo_byDepartment_json/<int:idDepartment>", methods=["GET"])
+@login_required
 def get_centros_de_costo_byDepartmento_json(idDepartment):
     try :
         data = Centro_de_costo_Service.getCentros_de_costoByDepartment_service(db, idDepartment)

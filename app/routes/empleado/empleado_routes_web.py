@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, abort, request, redirect, url_for
 from flask_login import login_required
 
 # Extensions
+from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
 from app.extensions.messages import FlashMessages
 
@@ -14,6 +15,7 @@ empleado_web_bp = Blueprint(
 
 @empleado_web_bp.route("/crearEmpleado_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("empleado.crear")
 def crearEmpleado_web():
     if request.method == "POST":
         data = {
@@ -42,6 +44,7 @@ def crearEmpleado_web():
 
 @empleado_web_bp.route("/editarEmpleado_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("empleado.editar")
 def editarEmpleado_web():
     empleados = Empleado_Service.getEmpleados_service(db)
     
@@ -74,9 +77,8 @@ def editarEmpleado_web():
 
 @empleado_web_bp.route("/eliminarEmpleado_web", methods=["GET", "POST"])
 @login_required
+@permiso_requerido("empleado.eliminar")
 def eliminarEmpleado_web():
-    empleados = Empleado_Service.getEmpleados_service(db)
-    
     if request.method == "POST":
         data = {
             "idEmpleado": request.form.get("idEmpleado"),
