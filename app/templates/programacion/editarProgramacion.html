@@ -310,6 +310,7 @@ message in messages %}
     let lineas = {};
     let procesos = {};
     let centrosDeCosto = {};
+    let usuarios = {};
 
     async function cargarCatalogos() {
       const [
@@ -317,17 +318,20 @@ message in messages %}
         lineasResponse,
         procesoResponse,
         centrosResponse,
+        usuariosResponse,
       ] = await Promise.all([
         fetch("/json/empleado/get_empleados"),
         fetch("/json/linea/get_lineas"),
         fetch("/json/proceso/get_procesos"),
         fetch("/json/centro_de_costo/get_centros_de_costo"),
+        fetch("/json/usuario/get_usuarios"),
       ]);
 
       const empleadosData = await empleadosResponse.json();
       const lineasData = await lineasResponse.json();
       const procesosData = await procesoResponse.json();
       const centrosData = await centrosResponse.json();
+      const usuariosData = await usuariosResponse.json();
 
       empleadosData.forEach((e) => {
         empleados[e.idEmpleado] =
@@ -338,6 +342,7 @@ message in messages %}
       lineasData.forEach((l) => (lineas[l.idLinea] = l.nameLinea));
       procesosData.forEach((p) => (procesos[p.idProceso] = p.proceso));
       centrosData.forEach((c) => (centrosDeCosto[c.idCentro] = c.nombreCentro));
+      usuariosData.forEach((u) => (usuarios[u.idUsuario] = u.nombre));
     }
 
     await cargarCatalogos();
@@ -381,7 +386,8 @@ message in messages %}
             );
           },
 
-          editor: canEdit && tienePermiso("registro.editar") ? "list" : false,
+          // editor: canEdit && tienePermiso("registro.editar") ? "list" : false,
+          editor: false,
 
           editorParams: {
             values: empleados,
@@ -507,6 +513,29 @@ message in messages %}
           editor: "input",
         },
         {
+          title: "Última modificación",
+          field: "ultima_modificacion",
+          editor: false,
+          formatter: "datetime",
+          formatterParams: {
+            inputFormat: "yyyy-MM-dd HH:mm:ss",
+            outputFormat: "dd/MM/yyyy HH:mm",
+          },
+        },
+        {
+          title: "Usuario que modificó",
+          field: "usuario_modificacion",
+          editor: false,
+
+          formatter: function (cell) {
+            return usuarios[cell.getValue()] || "—";
+          },
+
+          editorParams: {
+            values: usuarios,
+          },
+        },
+        /* {
           title: "❌",
           hozAlign: "center",
           formatter: () => {
@@ -538,7 +567,7 @@ message in messages %}
               .then((res) => res.json())
               .then(() => row.delete());
           },
-        },
+        }, */
         {
           title: "Estado",
           field: "_saveStatus",
@@ -715,6 +744,7 @@ message in messages %}
           });
           const resp = await response.json();
           if (resp.error) {
+            console.error(resp.error);
             return;
           }
           await actualizarTotalesPorLinea();
