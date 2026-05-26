@@ -1,5 +1,5 @@
 class Registro():
-    def __init__(self, idRegistro, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber):
+    def __init__(self, idRegistro, idProgramacion, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo, ultima_modificacion, usuario_modificacion):
         self.idRegistro = idRegistro
         self.idProgramacion = idProgramacion
         self.idEmpleado = idEmpleado
@@ -14,3 +14,6 @@ class Registro():
         self.fecha = fecha
         self.idCentro = idCentro
         self.badgeNumber = badgeNumber
+        self. cena_con_costo =  cena_con_costo
+        self.ultima_modificacion = ultima_modificacion
+        self.usuario_modificacion = usuario_modificacion

@@ -1,3 +1,8 @@
+from datetime import datetime
+
+from flask_login import current_user
+import pytz
+
 from app.extensions.slugify import Slugify
 
 class RegistroRepository:
@@ -543,15 +548,41 @@ class RegistroRepository:
             cursor = db.connection.cursor()
             
             query = """
-                UPDATE turnos_registro SET idEmpleado = %s, hora_inicio = %s, hora_fin = %s, idLinea = %s, idProceso = %s, aplica_almuerzo = %s, aplica_cena = %s, aplica_transporte = %s, observacion_transporte = %s, fecha = %s, idCentro = %s, badgeNumber = %s, cena_con_costo = %s
+                UPDATE turnos_registro SET idEmpleado = %s, hora_inicio = %s, hora_fin = %s, idLinea = %s, idProceso = %s, aplica_almuerzo = %s, aplica_cena = %s, aplica_transporte = %s, observacion_transporte = %s, fecha = %s, idCentro = %s, badgeNumber = %s, cena_con_costo = %s, ultima_modificacion = %s, usuario_modificacion = %s
                 WHERE idRegistro = %s
                 """
             
-            cursor.execute(query, (idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo, idRegistro, ))
+            # Timezone de Guatemala
+            tz = pytz.timezone("America/Guatemala")
+
+            # Hora actual REAL 
+            ultima_modificacion = datetime.now(tz)
+
+            usuario_modificacion = current_user.id
+            
+            cursor.execute(query, (
+                idEmpleado, 
+                hora_inicio, 
+                hora_fin, 
+                idLinea, 
+                idProceso, 
+                aplica_almuerzo, 
+                aplica_cena, 
+                aplica_transporte, 
+                observacion_transporte, 
+                fecha, 
+                idCentro, 
+                badgeNumber, 
+                cena_con_costo, 
+                ultima_modificacion, 
+                usuario_modificacion,
+                idRegistro,
+            ))
             
             db.connection.commit()
 
             editedRegistro = {
+                "success": True,
                 "idEmpleado": idEmpleado,
                 "idRegistro": idRegistro,
                 "hora_inicio": hora_inicio,
@@ -566,14 +597,16 @@ class RegistroRepository:
                 "idCentro": idCentro,
                 "badgeNumber": badgeNumber,
                 "cena_con_costo": cena_con_costo,
+                "ultima_modificacion": ultima_modificacion.strftime("%Y-%m-%d %H:%M:%S"),
+                "usuario_modificacion": current_user.id
             }
 
-            return {"mensaje": f"Registro modificado correctamente. ID: {editedRegistro['idRegistro']}"}
+            return editedRegistro
 
         except Exception as ex:
             db.connection.rollback()
                         
-            return {"error": f"No se pudo modificar registro en repositorio: {str(ex)}"}
+            raise Exception (f"No se pudo modificar registro en repositorio: {str(ex)}")
 
         finally:
             if cursor:

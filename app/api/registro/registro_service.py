@@ -33,6 +33,9 @@ class Registro_Service():
                 "fecha": data[11].isoformat(),
                 "idCentro": data[12],
                 "badgeNumber": data[13],
+                "cena_con_costo": data[14],
+                "ultima_modificacion": data[15],
+                "usuario_modificacion": data[16],
             }
             
             return registro
@@ -62,6 +65,8 @@ class Registro_Service():
                     "idCentro": row[12],
                     "badgeNumber": row[13],
                     "cena_con_costo": row[14],
+                    "ultima_modificacion": row[15],
+                    "usuario_modificacion": row[16],
                 }
                 registros.append(registro)
             return registros
@@ -91,6 +96,8 @@ class Registro_Service():
                     "idCentro": row[12],
                     "badgeNumber": row[13],
                     "cena_con_costo": row[14],
+                    "ultima_modificacion": None if row[15] == None else str(row[15].isoformat()).replace("T", " "),
+                    "usuario_modificacion": row[16],
                 }
                 registros.append(registro)
             return registros
@@ -119,6 +126,8 @@ class Registro_Service():
                     "idCentro": row[12],
                     "badgeNumber": row[13],
                     "cena_con_costo": row[14],
+                    "ultima_modificacion": row[15],
+                    "usuario_modificacion": row[16],
                 }
                 
                 if not registro["idLinea"] or not registro["idProceso"]:
@@ -371,7 +380,7 @@ class Registro_Service():
             if programacion["estado"] == "CERRADO":
                 return { "error": "La programación ya se encuentra cerrada." }
             
-            RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
+            dataUpdated = RegistroRepository.updateRegistro(db, idRegistro, idEmpleado, hora_inicio, hora_fin, idLinea, idProceso, aplica_almuerzo, aplica_cena, aplica_transporte, observacion_transporte, fecha, idCentro, badgeNumber, cena_con_costo)
             
             for log in logs:
                 data = {
@@ -381,14 +390,7 @@ class Registro_Service():
                     "valor_anterior": str(log["anterior"]),
                     "valor_nuevo": str(log["nuevo"])
                 }
-                print("\n --------------DATA-------------")
-                print(f"DATA: {data}")
-                print("---------------------------\n")
-                
                 log_insertado = Registro_log_Service.createRegistro_log_service(db, data)
-                print("\n --------------LOG-------------")
-                print(f"LOG: {log_insertado}")
-                print("---------------------------\n")
 
             return {
                 "success": True,
@@ -406,6 +408,8 @@ class Registro_Service():
                 "fecha": fecha,
                 "idCentro": idCentro,
                 "badgeNumber": badgeNumber,
+                "ultima_modificacion": dataUpdated["ultima_modificacion"],
+                "usuario_modificacion": dataUpdated["usuario_modificacion"],
             }
         
         except Exception as ex:

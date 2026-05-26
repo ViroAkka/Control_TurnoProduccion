@@ -73,6 +73,7 @@ from app.routes.proceso.proceso_routes_json import proceso_json_bp
 from app.routes.programacion.programacion_routes_json import programacion_json_bp
 from app.routes.registro.registro_routes_json import registro_json_bp
 from app.routes.reports.reports_routes_json import reports_json_bp
+from app.routes.usuario.usuario_routes_json import usuario_json_bp
 
 # Login Manager
 login_manager = LoginManager()
@@ -182,6 +183,7 @@ def create_app():
     app.register_blueprint(proceso_json_bp, url_prefix="/json/proceso")
     app.register_blueprint(registro_json_bp, url_prefix="/json/registro")
     app.register_blueprint(reports_json_bp, url_prefix="/json/reports")
+    app.register_blueprint(usuario_json_bp, url_prefix="/json/usuario")
 
 
     @app.route("/")
