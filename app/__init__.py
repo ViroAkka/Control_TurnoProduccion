@@ -1,8 +1,8 @@
-from flask import Flask, redirect, url_for, session, request
+from flask import Flask, jsonify, redirect, url_for, session, request
 from datetime import datetime, timedelta
 from app.extensions.error_handlers import register_error_handlers
 from config import DevelopmentConfig
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, logout_user
 from app.api.usuario.usuario_service import Usuario_Service
 
 from app.extensions.db import db
@@ -88,6 +88,15 @@ def create_app():
 
     db.init_app(app)
     login_manager.init_app(app)
+    @login_manager.unauthorized_handler
+    def unauthorized():
+        if request.path.startswith("/json/"):
+            return jsonify({
+                "session_expired": True,
+                "message": "Sesión expirada"
+            }), 401
+
+        return redirect(url_for("usuario_template.login"))
     login_manager.login_view = "usuario_template.login"
     """ login_manager.login_message = None """
 
@@ -105,16 +114,28 @@ def create_app():
             return
 
         if current_user.is_authenticated:
-            ahora = datetime.now()
+            if current_user.id not in [1, 2, 28]:
+                ahora = datetime.now()
 
-            if 'ultima_actividad' in session:
-                ultima = datetime.fromisoformat(session['ultima_actividad'])
+                if 'ultima_actividad' in session:
+                    ultima = datetime.fromisoformat(session['ultima_actividad'])
 
-                if ahora - ultima > timedelta(minutes=5):
-                    session.clear()
-                    return redirect(url_for("usuario_template.login"))
+                    if ahora - ultima > timedelta(minutes=5):
+                        logout_user()
+                        session.clear()
+                        # SI ES JSON/API
+                        if request.path.startswith("/json/"):
+                            return jsonify({
+                                "session_expired": True,
+                                "message": "Sesión expirada"
+                            }), 401
 
-            session['ultima_actividad'] = ahora.isoformat()
+                        # SI ES WEB NORMAL
+                        return redirect(
+                            url_for("usuario_template.login")
+                        )
+
+                session['ultima_actividad'] = ahora.isoformat()
 
     
     # Registro de blueprints

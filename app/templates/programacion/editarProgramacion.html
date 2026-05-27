@@ -231,6 +231,46 @@ message in messages %}
   <input type="text" name="fecha" id="fecha_asignacion" value="{{ fecha }}" />
 </form>
 
+<div
+  class="modal fade"
+  id="sessionExpiredModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title">Sesión expirada</h5>
+      </div>
+
+      <div class="modal-body">Tu sesión expiró por inactividad.</div>
+      <hr />
+      <form id="reauthForm" class="p-4">
+        <div class="mb-3">
+          <label class="form-label">Usuario</label>
+
+          <input type="text" class="form-control" id="reauthUser" required />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Contraseña</label>
+
+          <input
+            type="password"
+            class="form-control"
+            id="reauthPassword"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Renovar sesión</button>
+      </form>
+
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+
 <script>
   function confirmarAsignacionesForm_submit() {
     document.getElementById("confirmarAsignacionesForm").submit();
@@ -284,6 +324,35 @@ message in messages %}
     // Villa Nueva
     "12-08", // Feriado en Villa Nueva
   ];
+
+  async function apiFetch(url, options = {}) {
+    try {
+      const response = await fetch(url, options);
+
+      if (response.status === 401) {
+        mostrarSesionExpiradaModal();
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const contentType = response.headers.get("content-type");
+
+      if (!contentType?.includes("application/json")) {
+        throw new Error("Respuesta no válida");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(error);
+
+      alert("Ocurrió un error de comunicación con el servidor.");
+
+      return null;
+    }
+  }
 
   (function asignarFeriado() {
     const dataAsueto = document.querySelector(".asueto-data__programacion");
@@ -354,6 +423,14 @@ message in messages %}
 
       ajaxURL: `/json/registro/get_registros/${idProgramacion}`,
       ajaxConfig: "GET",
+      ajaxResponse: function (url, params, response) {
+        if (response.session_expired) {
+          mostrarSesionExpiradaModal();
+          return [];
+        }
+
+        return response;
+      },
 
       columns: [
         /* { title: "ID", field: "idRegistro", width: 80 }, */
@@ -434,7 +511,7 @@ message in messages %}
             });
 
             try {
-              let response;
+              let resp;
 
               // CREATE
               if (data._isNew) {
@@ -442,7 +519,7 @@ message in messages %}
                   alert("Fila sin ID válido");
                   return;
                 }
-                response = await fetch("/json/registro/create_registro", {
+                resp = await apiFetch("/json/registro/create_registro", {
                   method: "POST",
                   headers: {
                     "Content-Type": "application/json",
@@ -451,7 +528,7 @@ message in messages %}
                 });
               } else {
                 // UPDATE
-                response = await fetch(
+                resp = await apiFetch(
                   `/json/registro/update_registro/${data.idRegistro}`,
                   {
                     method: "PUT",
@@ -463,7 +540,15 @@ message in messages %}
                 );
               }
 
-              const resp = await response.json();
+              if (!resp) {
+                row.update({
+                  _saveStatus: "error",
+                });
+
+                return;
+              }
+
+              // const resp = await response.json();
               refreshRowAndTotals(resp, row);
 
               if (resp.error) {
@@ -994,6 +1079,14 @@ message in messages %}
 
     ajaxURL: `/json/programacion/get_counts_by_line/${idProgramacion}`,
     ajaxConfig: "GET",
+    ajaxResponse: function (url, params, response) {
+      if (response.session_expired) {
+        mostrarSesionExpiradaModal();
+        return [];
+      }
+
+      return response;
+    },
 
     columns: [
       {
@@ -1080,6 +1173,14 @@ message in messages %}
 
     ajaxURL: `/json/programacion/get_counts_by_line/${idProgramacion}`,
     ajaxConfig: "GET",
+    ajaxResponse: function (url, params, response) {
+      if (response.session_expired) {
+        mostrarSesionExpiradaModal();
+        return [];
+      }
+
+      return response;
+    },
 
     columns: [
       {
@@ -1120,6 +1221,72 @@ message in messages %}
         row.getElement().classList.add("yellow-row");
       }
     },
+  });
+
+  let sessionModalVisible = false;
+
+  function mostrarSesionExpiradaModal() {
+    if (sessionModalVisible) return;
+
+    sessionModalVisible = true;
+
+    const usernameInput = document.getElementById("reauthUser");
+
+    const modal = new bootstrap.Modal(
+      document.getElementById("sessionExpiredModal"),
+      {
+        backdrop: "static",
+        keyboard: false,
+      },
+    );
+
+    modal.show();
+    usernameInput.focus();
+  }
+
+  const reauthForm = document.getElementById("reauthForm");
+
+  reauthForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const usernameInput = document.getElementById("reauthUser");
+    const passwordInput = document.getElementById("reauthPassword");
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+
+    try {
+      const response = await fetch("/json/usuario/reauth", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          username,
+          password,
+        }),
+      });
+
+      const resp = await response.json();
+
+      if (!resp.success) {
+        alert("Credenciales inválidas");
+        return;
+      }
+
+      sessionModalVisible = false;
+
+      bootstrap.Modal.getInstance(
+        document.getElementById("sessionExpiredModal"),
+      ).hide();
+
+      usernameInput.value = passwordInput.value = "";
+
+      alert("Sesión renovada");
+    } catch (error) {
+      console.error(error);
+    }
   });
 </script>
 

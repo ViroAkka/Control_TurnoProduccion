@@ -1,5 +1,9 @@
-from flask import Blueprint, jsonify, request
-from flask_login import login_required
+from datetime import datetime
+
+from flask import Blueprint, jsonify, request, session
+from flask_login import login_required, login_user
+from app.api.usuario.usuario_model import Usuario_Rutas
+from app.api.usuario.usuario_repository import UsuarioRepository
 from app.api.usuario.usuario_service import Usuario_Service
 from app.core.auth.permiso_requerido_decorator import permiso_requerido
 from app.extensions.db import db
@@ -15,3 +19,32 @@ def get_usuarios():
 
     return jsonify(data), 200
 
+@usuario_json_bp.route("/reauth", methods=["POST"])
+def reauth():
+
+    data = request.get_json()
+
+    dataUser = {
+        "username": data.get("username"),
+        "password": data.get("password"),
+    }
+    print(dataUser)
+
+    usuario = Usuario_Service.login_service(db, dataUser)
+    print(usuario)
+    if "error" in usuario:
+        return jsonify({
+            "success": False,
+            "message": "Credenciales inválidas"
+        }), 401
+    
+    user = Usuario_Service.getUsuario_login_service(db, usuario["idUsuario"])
+    print(user)
+
+    login_user(user)
+
+    session['ultima_actividad'] = datetime.now().isoformat()
+
+    return jsonify({
+        "success": True
+    })

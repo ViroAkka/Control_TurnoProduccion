@@ -27,7 +27,7 @@ def create_registro():
     result = Registro_Service.createRegistro_service(db, data)
     return jsonify(result), 201
 
-@registro_json_bp.route("/update_registro/<int:idRegistro>", methods=["PUT"])
+@registro_json_bp.route("/update_registro/<int:idRegistro>", methods=["PUT", "POST"])
 @login_required
 @permiso_requerido("registro.editar")
 def update_registro(idRegistro):

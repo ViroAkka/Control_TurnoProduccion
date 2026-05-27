@@ -158,14 +158,11 @@ class Usuario_Service():
       session.permanent = True
          
       return {
-         "mensaje": "Usuario logueado correctamente.",
-         "usuario": {
             "idUsuario": usuarioALoguear.id,
             "username": usuarioALoguear.username,
             "nombre": usuarioALoguear.nombre,
             "activo": usuarioALoguear.activo,
             "rutas": usuarioALoguear.paths,
-            }  
          }
    
    @staticmethod
