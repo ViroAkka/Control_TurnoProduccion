@@ -499,7 +499,7 @@ class RegistroRepository:
                 cursor.close()
     
     @staticmethod
-    def createRegistroAutomatico(db, idProgramacion, idEmpleado, fecha, idCentro, badgeNumber):
+    def createRegistroAutomatico(db, idProgramacion, idEmpleado, idLinea, idProceso, fecha, idCentro, badgeNumber):
         cursor = None
 
         try:
@@ -513,10 +513,10 @@ class RegistroRepository:
             cursor = db.connection.cursor()
             
             query = """
-                INSERT INTO turnos_registro(idProgramacion, idEmpleado, fecha, idCentro, badgeNumber)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO turnos_registro(idProgramacion, idEmpleado, idLinea, idProceso, fecha, idCentro, badgeNumber)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
                 """
-            cursor.execute(query, (idProgramacion, idEmpleado, fecha, idCentro, badgeNumber,))
+            cursor.execute(query, (idProgramacion, idEmpleado, idLinea, idProceso, fecha, idCentro, badgeNumber,))
             
             db.connection.commit()
 
@@ -526,10 +526,12 @@ class RegistroRepository:
                 "idEmpleado": idEmpleado,
                 "fecha": fecha,
                 "idCentro": idCentro,
+                "idLinea": idLinea,
+                "idProceso": idProceso,
                 "badgeNumber": badgeNumber,
             }
 
-            return
+            return newRegistro
         
         except Exception as ex:
             db.connection.rollback()
