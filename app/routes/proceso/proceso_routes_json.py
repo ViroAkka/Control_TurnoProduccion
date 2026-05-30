@@ -14,3 +14,12 @@ def get_procesos():
         return jsonify([]), 200
 
     return jsonify(data), 200
+
+@proceso_json_bp.route("/get_procesos_by_department/<int:idDepartment>", methods=["GET"])
+@login_required
+def get_procesos_by_department(idDepartment):
+    data = Proceso_Service.getProcesosByDepartment_service(db, idDepartment)
+    if not data:
+        return jsonify([]), 200
+
+    return jsonify(data), 200

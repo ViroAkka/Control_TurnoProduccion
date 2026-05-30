@@ -1,3 +1,5 @@
+import MySQLdb
+
 from app.extensions.slugify import Slugify
 
 class ProcesoRepository:
@@ -69,6 +71,32 @@ class ProcesoRepository:
         
         except Exception as ex:
             return {"error": f"No se pueden listar los procesos en repositorio: {str(ex)}"}
+
+        finally:
+            if cursor:
+                cursor.close()
+
+    @staticmethod
+    def getProcesosByDepartment(db, idDepartment):
+        cursor = None
+        
+        try: 
+            cursor = db.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            query = """
+            SELECT * 
+            FROM turnos_proceso
+            WHERE idDepartment = %s
+            ORDER BY proceso
+            """
+            cursor.execute(query, (idDepartment,))
+
+            procesos = cursor.fetchall()
+
+            return procesos
+        
+        except Exception as ex:
+            raise Exception (f"No se pueden listar los procesos en repositorio: {str(ex)}")
 
         finally:
             if cursor:
